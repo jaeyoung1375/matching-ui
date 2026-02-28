@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+.editor-wrapper {
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #f8f9fa;
+}
+
+.editor-toolbar button {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.editor-toolbar button.active {
+  background: #333;
+  color: white;
+}
+
+.tiptap {
+  min-height: 200px;
+  padding: 12px;
+  outline: none;
+}
+
+.tiptap:focus {
+  outline: none;
+}

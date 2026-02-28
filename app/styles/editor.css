@@ -1,0 +1,76 @@
+/* editor.css */
+.tiptap h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.tiptap h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.tiptap ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.tiptap ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+.tiptap li {
+  margin: 0.25rem 0;
+}
+
+/* =========================
+   Inline code (toggleCode)
+   ========================= */
+.tiptap code {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #111827; /* gray-900 */
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* prose / reset 충돌 방지 */
+.tiptap p code {
+  background-color: #f3f4f6;
+}
+
+/* =========================
+   Code Block (toggleCodeBlock)
+   ========================= */
+.tiptap pre {
+  background-color: #0f172a; /* slate-900 */
+  color: #e5e7eb; /* gray-200 */
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.tiptap pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* =========================
+   Blockquote (toggleBlockquote)
+   ========================= */
+.tiptap blockquote {
+  border-left: 4px solid #d1d5db; /* gray-300 */
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #374151; /* gray-700 */
+  font-style: italic;
+}
