@@ -1,15 +1,12 @@
+"use client";
 import Input from "@/components/Input";
-import SelectBox, { SelectOption } from "../components/SelectBox";
+import SelectBox from "../components/SelectBox";
 import Button from "../components/Button";
 import Editor from "../components/Editor";
+import { useCodeQuery } from "../features/code/code.query";
 
-export default function Page() {
-  const option: SelectOption[] = [
-    { label: "naver.com", value: "naver.com" },
-    { label: "gmail.com", value: "gmail.com" },
-    { label: "daum.net", value: "daum.net" },
-    { label: "kakao.com", value: "kakao.com" },
-  ];
+export default function Test() {
+  const { data: jobType = [] } = useCodeQuery({ comCdId: "JOB_TYPE_CD" });
 
   return (
     <div className="min-h-[1400px]">
@@ -17,7 +14,7 @@ export default function Page() {
       <div className="w-full">
         <SelectBox
           className="select-primary"
-          options={option}
+          options={jobType}
           placeholder="직무선택"
         />
       </div>
