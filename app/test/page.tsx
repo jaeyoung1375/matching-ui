@@ -23,7 +23,7 @@ export default function Page() {
         <Button className="w-1/2">회원가입</Button>
       </div>
       <br />
-      <Button className="w-fit">회원가입</Button>
+      <Button className="btn-primary">회원가입</Button>
     </>
   );
 }
