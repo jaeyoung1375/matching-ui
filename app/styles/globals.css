@@ -2,7 +2,15 @@
 
 @layer components {
   .btn-primary {
-    @apply text-white text-base font-bold px-11 h-[47px] rounded-[27px] bg-[#FFA94D];
+    @apply text-white text-base font-bold px-7 h-[47px] rounded-[27px] bg-[#FFA94D];
+  }
+
+  .btn-white {
+    @apply text-black text-base font-bold px-7 h-[47px] rounded-[27px] bg-[#fff] border border-[#666];
+  }
+
+  .select-primary {
+    @apply h-[55px] bg-white border-b-amber-400 w-full;
   }
 }
 

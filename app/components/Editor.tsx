@@ -2,13 +2,14 @@
 import "@/styles/editor.css";
 
 import { EditorContent, useEditor } from "@tiptap/react";
+import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function Editor() {
   const [, forceUpdate] = useState(0);
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, Image],
     content: "<p></p>",
     immediatelyRender: false,
     onUpdate: () => forceUpdate((v) => v + 1),
@@ -29,8 +30,24 @@ export default function Editor() {
          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
      }`;
 
+  /** 이미지 추가 버튼 */
+  const addImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        editor?.chain().focus().setImage({ src: reader.result }).run();
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   return (
-    <div className="border border-gray-200 rounded-lg bg-white">
+    <div className="border border-black-200 rounded-lg bg-white h-[600px]">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-gray-50">
         <button
@@ -86,6 +103,10 @@ export default function Editor() {
         >
           1. List
         </button>
+        <label className={btn()}>
+          Image
+          <input type="file" accept="image/*" onChange={addImage} hidden />
+        </label>
 
         <div className="w-px h-5 bg-gray-300 mx-1" />
 
