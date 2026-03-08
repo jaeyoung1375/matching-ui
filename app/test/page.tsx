@@ -6,7 +6,14 @@ import Editor from "../components/Editor";
 import { useCodeQuery } from "../features/code/code.query";
 
 export default function Test() {
-  const { data: jobType = [] } = useCodeQuery({ comCdId: "JOB_TYPE_CD" });
+  const { data: jobType = [], error } = useCodeQuery({
+    comCdId: "JOB_TYPE_CD",
+  });
+
+  // 서버에서 예외처리 날리면
+  if (error?.code) {
+    alert(error.message);
+  }
 
   return (
     <div className="min-h-[1400px]">

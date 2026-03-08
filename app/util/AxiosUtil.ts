@@ -4,6 +4,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 interface ApiResponse<T> {
   code: string;
   data: T;
+  message: string;
 }
 
 const api = axios.create({
@@ -13,12 +14,14 @@ const api = axios.create({
 
 api.interceptors.response.use(
   <T>(res: AxiosResponse<ApiResponse<T>>) => {
-    const { code, data } = res.data;
+    const { code, data, message } = res.data;
 
     if (code !== "0000") {
-      return Promise.reject(res.data);
+      // 서버 예외 발생 → error로 전달
+      return Promise.reject({ code, message, data });
     }
 
+    // 정상
     return data;
   },
   (err) => Promise.reject(err),
