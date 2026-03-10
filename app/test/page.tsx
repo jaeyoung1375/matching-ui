@@ -1,29 +1,36 @@
+"use client";
 import Input from "@/components/Input";
-import SelectBox, { SelectOption } from "../components/SelectBox";
+import SelectBox from "../components/SelectBox";
 import Button from "../components/Button";
+import Editor from "../components/Editor";
+import { useCodeQuery } from "../features/code/code.query";
 
-export default function Page() {
-  const option: SelectOption[] = [
-    { label: "선택", value: "" },
-    { label: "naver.com", value: "naver.com" },
-    { label: "gmail.com", value: "gmail.com" },
-    { label: "daum.net", value: "daum.net" },
-    { label: "kakao.com", value: "kakao.com" },
-  ];
+export default function Test() {
+  const { data: jobType = [], error } = useCodeQuery({
+    comCdId: "JOB_TYPE_CD",
+  });
+
+  // 서버에서 예외처리 날리면
+  if (error?.code) {
+    alert(error.message);
+  }
 
   return (
-    <>
+    <div className="min-h-[1400px]">
       <Input />
-      <SelectBox options={option} />
-      <div>
-        <Button className="w-full">회원가입</Button>
+      <div className="w-full">
+        <SelectBox
+          className="select-primary"
+          options={jobType}
+          placeholder="직무선택"
+        />
       </div>
+
       <br />
-      <div>
-        <Button className="w-1/2">회원가입</Button>
-      </div>
-      <br />
-      <Button className="btn-primary">회원가입</Button>
-    </>
+      <Button className="btn-primary">팀원 모집하기</Button>
+      <Button className="btn-white">비지니스 문의</Button>
+
+      <Editor />
+    </div>
   );
 }
