@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { logoutApi, getMe } from "../features/auth/auth.query";
 
 interface User {
@@ -11,6 +12,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
 }
@@ -18,12 +20,18 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
     const fetchUser = async () => {
       try {
@@ -31,6 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(result.data);
       } catch (err) {
         console.error(err);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -39,7 +50,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (user: User, token: string) => {
     localStorage.setItem("accessToken", token);
-    localStorage.setItem("user", JSON.stringify(user));
     setUser(user);
   };
 
@@ -56,13 +66,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
 
     setUser(null);
+
+    router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
