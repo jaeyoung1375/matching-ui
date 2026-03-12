@@ -1,6 +1,7 @@
 "use client";
 
 import BaseModal from "@/components/ui/modal/BaseModal";
+import Link from "next/link";
 
 interface LoginModalProps {
   open: boolean;
@@ -40,11 +41,13 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           새로운 프로젝트를 시작하는 협업 플랫폼입니다!
         </p>
         <div className="mt-10 flex w-70 flex-col gap-4">
-          <SocialLoginButton
-            label="이메일로 로그인"
-            bgClass="bg-blue-600"
-            textClass="text-white"
-          />
+          <Link href="/login" onClick={onClose} className="w-full">
+            <SocialLoginButton
+              label="이메일로 로그인"
+              bgClass="bg-blue-600"
+              textClass="text-white"
+            />
+          </Link>
 
           <SocialLoginButton
             label="Google 로그인"
