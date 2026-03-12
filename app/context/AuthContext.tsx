@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { logoutApi } from "../features/auth/auth.query";
+import { logoutApi, getMe } from "../features/auth/auth.query";
 
 interface User {
   id: number;
@@ -21,11 +21,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("accessToken");
 
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (!token) return;
+
+    const fetchUser = async () => {
+      try {
+        const result = await getMe(token);
+        setUser(result.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   const login = (user: User, token: string) => {

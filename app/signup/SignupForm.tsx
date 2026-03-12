@@ -109,14 +109,14 @@ export default function SignupForm() {
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* 이름 */}
+        {/* 닉네임 */}
         <div>
           <label className="mb-2 block text-sm font-medium text-neutral-700">
-            이름
+            닉네임
           </label>
           <input
             type="text"
-            placeholder="이름을 입력해주세요"
+            placeholder="닉네임을 입력해주세요"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
