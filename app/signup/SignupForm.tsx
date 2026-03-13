@@ -14,6 +14,8 @@ export default function SignupForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   const [emailChecked, setEmailChecked] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
@@ -74,6 +76,15 @@ export default function SignupForm() {
     if (password !== confirmPassword) {
       setErrorMessage("비밀번호가 일치하지 않습니다.");
       return;
+    }
+
+    if (password.length < 8) {
+      setPasswordError("비밀번호는 8자리 이상이어야 합니다.");
+      return;
+    }
+
+    if (confirmPasswordError.length < 8) {
+      setConfirmPasswordError("비밀번호는 8자리 이상이어야 합니다.");
     }
 
     if (!phone.trim()) {
@@ -182,7 +193,16 @@ export default function SignupForm() {
             type="password"
             placeholder="비밀번호를 입력해주세요"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPassword(value);
+
+              if (value.length < 8) {
+                setPasswordError("비밀번호는 8자리 이상이어야 합니다.");
+              } else {
+                setPasswordError(""); // 조건 만족하면 에러 제거
+              }
+            }}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />
         </div>
@@ -196,10 +216,23 @@ export default function SignupForm() {
             type="password"
             placeholder="비밀번호를 다시 입력해주세요"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setConfirmPassword(value);
+
+              if (password !== value) {
+                setPasswordError("비밀번호가 일치하지 않습니다.");
+              } else {
+                setPasswordError("");
+              }
+            }}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />
         </div>
+
+        {passwordError && (
+          <p className="mt-1 text-sm text-red-500">{passwordError}</p>
+        )}
 
         {/* 핸드폰 */}
         <div>

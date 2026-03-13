@@ -25,6 +25,10 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
 
   const result = await response.json();
 
+  // 백엔드 ApiResponse code 체크
+  if (!response.ok || result.code !== "0000") {
+    throw new Error(result.message || "로그인에 실패했습니다.");
+  }
   return result.data;
 }
 
