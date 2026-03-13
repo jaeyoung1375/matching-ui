@@ -3,6 +3,7 @@ import {
   LoginResponse,
   SignupRequest,
   SignupResponse,
+  Language,
 } from "./auth.type";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -38,6 +39,7 @@ export async function signup(data: SignupRequest): Promise<SignupResponse> {
       email: data.email,
       password: data.password,
       phone: data.phone,
+      dtlCdIds: data.dtlCdIds,
     }),
     credentials: "include",
   });
@@ -92,4 +94,14 @@ export async function logoutApi(token: string) {
   }
 
   return res.json();
+}
+
+export async function getLanguages(): Promise<Language[]> {
+  const res = await fetch(`${API_BASE_URL}/api/v1/auth/public/tech-stacks`, {
+    method: "GET",
+  });
+
+  const json = await res.json();
+
+  return json.data;
 }

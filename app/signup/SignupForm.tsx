@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signup, checkEmail } from "../features/auth/auth.query";
+import LanguageSelect from "./LanguageSelect";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -16,6 +17,8 @@ export default function SignupForm() {
 
   const [emailChecked, setEmailChecked] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+
+  const [languages, setLanguages] = useState<string[]>([]);
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +86,11 @@ export default function SignupForm() {
       return;
     }
 
+    if (languages.length === 0) {
+      setErrorMessage("관심분야를 최소 1개 선택해주세요.");
+      return;
+    }
+
     try {
       setIsLoading(true);
 
@@ -92,6 +100,7 @@ export default function SignupForm() {
         password,
         confirmPassword,
         phone,
+        dtlCdIds: languages,
       });
 
       router.push("/login");
@@ -205,6 +214,9 @@ export default function SignupForm() {
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />
         </div>
+
+        {/* 관심분야 */}
+        <LanguageSelect onChange={setLanguages} />
 
         {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 

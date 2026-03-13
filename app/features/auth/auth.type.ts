@@ -17,6 +17,7 @@ export interface SignupRequest {
   password: string;
   confirmPassword: string;
   phone: string;
+  dtlCdIds: string[];
 }
 
 export interface SignupResponse {
@@ -24,4 +25,9 @@ export interface SignupResponse {
   email?: string;
   name?: string;
   message?: string;
+}
+
+export interface Language {
+  id: number;
+  name: string;
 }
