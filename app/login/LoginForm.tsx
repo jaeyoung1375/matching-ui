@@ -42,9 +42,9 @@ export default function LoginForm() {
       localStorage.setItem("accessToken", result.accessToken);
       localStorage.setItem("refreshToken", result.refreshToken);
 
-      const user = await getMe(result.accessToken);
+      const res = await getMe(result.accessToken);
 
-      setAuth(user, result.accessToken);
+      setAuth(res.data, result.accessToken);
 
       router.push("/");
       router.refresh();

@@ -109,3 +109,27 @@ export async function getLanguages(): Promise<Language[]> {
 
   return json.data;
 }
+
+export async function updateUser(token: string, data: any) {
+  const res = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+}
+
+export async function withdrawUser(token: string) {
+  const res = await fetch("/api/v1/auth/me", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.json();
+}

@@ -11,22 +11,33 @@ interface Option {
 
 interface Props {
   onChange: (languages: string[]) => void;
+  defaultLanguages?: string[];
 }
 
-export default function LanguageSelect({ onChange }: Props) {
+export default function LanguageSelect({
+  onChange,
+  defaultLanguages = [],
+}: Props) {
   const [options, setOptions] = useState<Option[]>([]);
   const [selected, setSelected] = useState<Option[]>([]);
 
   useEffect(() => {
     async function loadLanguages() {
       const languages = await getLanguages();
-      console.log(languages);
       const mapped = languages.map((lang: any) => ({
         value: lang.dtlCdId,
         label: lang.dtlCdNm,
       }));
 
       setOptions(mapped);
+
+      if (defaultLanguages.length > 0) {
+        const defaults = mapped.filter((opt) =>
+          defaultLanguages.includes(opt.value),
+        );
+
+        setSelected(defaults);
+      }
     }
 
     loadLanguages();
