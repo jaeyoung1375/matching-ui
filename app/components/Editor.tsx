@@ -6,13 +6,18 @@ import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import React, { useState } from "react";
 
-export default function Editor() {
+type EditorProps = {
+  value?: string;
+  onChange: (val: string) => void;
+};
+
+export default function Editor({ value, onChange }: EditorProps) {
   const [, forceUpdate] = useState(0);
   const editor = useEditor({
     extensions: [StarterKit, Image],
-    content: "<p></p>",
+    content: value,
     immediatelyRender: false,
-    onUpdate: () => forceUpdate((v) => v + 1),
+    onUpdate: () => onChange(editor?.getHTML() ?? ""),
     onSelectionUpdate: () => forceUpdate((v) => v + 1),
     editorProps: {
       attributes: {
