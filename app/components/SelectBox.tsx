@@ -36,7 +36,10 @@ const SelectBox = forwardRef<HTMLSelectElement, SelectProps>(
           value={value}
           onChange={(e) => setValue(e.target.value)}
           ref={ref}
-          className={clsx(className, !value ? "text-gray-400" : "text-black")}
+          className={clsx(
+            `${className} border border-[rgb(204, 204, 204)]`,
+            !value ? "text-gray-400" : "text-black ",
+          )}
           {...props}
           defaultValue=""
         >
