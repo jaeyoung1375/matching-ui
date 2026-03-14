@@ -7,6 +7,8 @@ import Label from "@/app/components/Label";
 import SelectBox, { SelectOption } from "@/app/components/SelectBox";
 import { ApiError } from "@/app/features/common/types/common.type";
 import { PostDto } from "@/app/features/post/post.type";
+import { useAlertStore } from "@/app/store/alertStore";
+import { useConfirmStore } from "@/app/store/confirmStore";
 import { post } from "@/app/util/AxiosUtil";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
@@ -23,6 +25,9 @@ type Props = {
 };
 
 export default function PostRegister({ selectOptions }: Props) {
+  const setAlert = useAlertStore((state) => state.setAlert);
+  const setConfirm = useConfirmStore((state) => state.setConfirm);
+
   const router = useRouter();
 
   /** 공통코드 목록 조회 */
@@ -45,12 +50,15 @@ export default function PostRegister({ selectOptions }: Props) {
 
   const onSubmit = async (data: PostDto) => {
     const mergedData = { ...data, userId: 36, recruitEndDate: new Date() };
-    const res = await post<ApiError>("/api/v1/posts", mergedData);
+    // const res = await post<ApiError>("/api/v1/posts", mergedData);
 
-    // 성공시 메인으로 이동 (임시)
-    if (res && res.code === "0000") {
-      router.push("/");
-    }
+    // // 성공시 메인으로 이동 (임시)
+    // if (res && res.code === "0000") {
+    //   router.push("/");
+    // }
+
+    // setAlert("송금이 완료되었습니다.");
+    setConfirm("정말삭제하시겠습니까?");
   };
 
   return (
