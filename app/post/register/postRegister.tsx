@@ -5,6 +5,7 @@ import Editor from "@/app/components/Editor";
 import Input from "@/app/components/Input";
 import Label from "@/app/components/Label";
 import SelectBox, { SelectOption } from "@/app/components/SelectBox";
+import TeamoDatePicker from "@/app/components/TeamoDatePicker";
 import { ApiError } from "@/app/features/common/types/common.type";
 import { PostDto } from "@/app/features/post/post.type";
 import { useAlertStore } from "@/app/store/alertStore";
@@ -50,15 +51,12 @@ export default function PostRegister({ selectOptions }: Props) {
 
   const onSubmit = async (data: PostDto) => {
     const mergedData = { ...data, userId: 36, recruitEndDate: new Date() };
-    // const res = await post<ApiError>("/api/v1/posts", mergedData);
+    const res = await post<ApiError>("/api/v1/posts", mergedData);
 
-    // // 성공시 메인으로 이동 (임시)
-    // if (res && res.code === "0000") {
-    //   router.push("/");
-    // }
-
-    // setAlert("송금이 완료되었습니다.");
-    setConfirm("정말삭제하시겠습니까?");
+    // 성공시 메인으로 이동 (임시)
+    if (res && res.code === "0000") {
+      router.push("/");
+    }
   };
 
   return (
@@ -169,7 +167,8 @@ export default function PostRegister({ selectOptions }: Props) {
 
           <div className="flex flex-col gap-1">
             <Label title="position">모집 마감일</Label>
-            <SelectBox className="select-primary w-114.75" options={[]} />
+            {/* <SelectBox className="select-primary w-114.75" options={[]} /> */}
+            <TeamoDatePicker className="select-primary w-114.75" />
           </div>
         </div>
 

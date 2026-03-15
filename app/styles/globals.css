@@ -91,3 +91,22 @@
 .tiptap:focus {
   outline: none;
 }
+
+.react-datepicker {
+  width: 459px;
+}
+
+.react-datepicker__month-container {
+  width: 100%;
+}
+.react-datepicker__month {
+  width: 100%;
+}
+
+.react-datepicker__day {
+  font-size: 21px;
+}
+
+.react-datepicker__day-name {
+  font-size: 21px;
+}
