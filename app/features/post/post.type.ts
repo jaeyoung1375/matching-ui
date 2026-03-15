@@ -33,7 +33,7 @@ export type PostDto = {
   progressPeriod?: string;
 
   /** 기술스택구분코드 */
-  techStackTypeCd?: string;
+  techStackTypeCd?: string[];
 
   /** 모집마감일 */
   recruitEndDate?: string | Date;

@@ -4,6 +4,7 @@ import Button from "@/app/components/Button";
 import Editor from "@/app/components/Editor";
 import Input from "@/app/components/Input";
 import Label from "@/app/components/Label";
+import MultiSelect from "@/app/components/MultiSelectBox";
 import SelectBox, { SelectOption } from "@/app/components/SelectBox";
 import TeamoDatePicker from "@/app/components/TeamoDatePicker";
 import { ApiError } from "@/app/features/common/types/common.type";
@@ -42,7 +43,7 @@ export default function PostRegister({ selectOptions }: Props) {
    * - handleSubmit: 제출 시 데이터 수집
    * - control: Controller로 커스텀 컴포넌트(FormSelect 등) 연결
    */
-  const { register, handleSubmit, control } = useForm<PostDto>({
+  const { register, handleSubmit, control, watch } = useForm<PostDto>({
     defaultValues: {
       userId: 36,
       recruitEndDate: new Date(),
@@ -155,7 +156,7 @@ export default function PostRegister({ selectOptions }: Props) {
               name="techStackTypeCd"
               control={control}
               render={({ field }) => (
-                <SelectBox
+                <MultiSelect
                   className="select-primary w-114.75"
                   options={techStack}
                   placeholder="프로젝트 사용 스택"
@@ -167,8 +168,16 @@ export default function PostRegister({ selectOptions }: Props) {
 
           <div className="flex flex-col gap-1">
             <Label title="position">모집 마감일</Label>
-            {/* <SelectBox className="select-primary w-114.75" options={[]} /> */}
-            <TeamoDatePicker className="select-primary w-114.75" />
+            <Controller
+              name="recruitEndDate"
+              control={control}
+              render={({ field }) => (
+                <TeamoDatePicker
+                  className="select-primary w-114.75"
+                  {...field}
+                />
+              )}
+            />
           </div>
         </div>
 
