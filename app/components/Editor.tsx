@@ -5,6 +5,9 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import React, { useState } from "react";
+import { postForm } from "../util/AxiosUtil";
+import { toMultipart } from "../util/FileUtil";
+import { ApiError } from "../features/common/types/common.type";
 
 type EditorProps = {
   value?: string;
@@ -35,20 +38,22 @@ export default function Editor({ value, onChange }: EditorProps) {
          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
      }`;
 
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await postForm<ApiError>("/api/v1/file/editor-image", formData);
+    return res.data;
+  };
+
   /** 이미지 추가 버튼 */
-  const addImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const addImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    const url = (await uploadImage(file)) as string;
 
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        editor?.chain().focus().setImage({ src: reader.result }).run();
-      }
-    };
-
-    reader.readAsDataURL(file);
+    editor?.chain().focus().setImage({ src: url }).run();
   };
 
   return (
