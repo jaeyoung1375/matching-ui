@@ -6,7 +6,6 @@ import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import React, { useState } from "react";
 import { postForm } from "../util/AxiosUtil";
-import { toMultipart } from "../util/FileUtil";
 import { ApiError } from "../features/common/types/common.type";
 
 type EditorProps = {
