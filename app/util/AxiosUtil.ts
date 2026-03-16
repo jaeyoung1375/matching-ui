@@ -53,4 +53,11 @@ export const postForm = <T>(
 export const deleteData = <T>(url: string, config?: AxiosRequestConfig) =>
   api.delete<T>(url, config);
 
+// PUT 요청
+export const put = <T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig,
+) => api.put<ApiResponse<T>>(url, data, config) as Promise<T>;
+
 export default api;

@@ -31,3 +31,18 @@ export interface Language {
   id: number;
   name: string;
 }
+
+export interface TechStackResponse {
+  languageId: number;
+  name: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  phone: string;
+  role: string;
+  profileImageUrl?: string;
+  languages: TechStackResponse[];
+}

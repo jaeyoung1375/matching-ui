@@ -13,7 +13,7 @@ export default function MyPagePage() {
       if (!token) return;
 
       const me = await getMe(token);
-      setUser(me.data);
+      setUser(me);
     };
 
     init();
