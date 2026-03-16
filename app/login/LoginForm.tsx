@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login, getMe } from "../features/auth/auth.query";
 import { useAuth } from "../context/AuthContext";
+import Button from "../components/Button";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function LoginForm() {
 
       const res = await getMe(result.accessToken);
 
-      setAuth(res.data, result.accessToken);
+      setAuth(res, result.accessToken);
 
       router.push("/");
       router.refresh();
@@ -98,13 +99,13 @@ export default function LoginForm() {
 
         {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
-        <button
+        <Button
           type="submit"
-          disabled={isLoading}
+          loading={isLoading}
           className="mt-2 h-12 rounded-xl bg-black text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isLoading ? "로그인 중..." : "로그인"}
-        </button>
+          로그인
+        </Button>
       </form>
 
       <div className="mt-6 text-center text-sm text-neutral-500">

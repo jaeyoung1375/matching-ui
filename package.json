@@ -23,14 +23,9 @@
     "react": "19.2.3",
     "react-datepicker": "^9.1.0",
     "react-dom": "19.2.3",
-<<<<<<< HEAD
-    "react-select": "^5.10.2",
-    "tailwind": "^4.0.0"
-=======
     "react-hook-form": "^7.71.2",
     "tailwind": "^4.0.0",
     "zustand": "^5.0.11"
->>>>>>> 69ebf335e1b8d395f8a7fe8eb3e06b2a58ecc4a9
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
