@@ -13,20 +13,20 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  <T>(res: AxiosResponse<ApiResponse<T>>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (res: AxiosResponse<any>): any => {
+    // 반환 타입 any
     const { code, data, message } = res.data;
+    const method = res.config.method?.toLowerCase();
 
     if (code !== "0000") {
-      // 서버 예외 발생 → error로 전달
       return Promise.reject({ code, message, data });
     }
 
-    // 정상
-    return data;
+    return method === "get" ? data : { code, message, data };
   },
   (err) => Promise.reject(err),
 );
-
 // GET 요청
 export const get = <T>(
   url: string,
@@ -40,7 +40,7 @@ export const post = <T>(
   url: string,
   data?: unknown,
   config?: AxiosRequestConfig,
-) => api.post<ApiResponse<T>>(url, data, config);
+) => api.post<ApiResponse<T>>(url, data, config) as Promise<T>;
 
 // POST 요청
 export const postForm = <T>(

@@ -42,8 +42,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           className={clsx(
-            "w-full rounded-md border px-3",
-            sizeMap[size],
+            `${className} border border-[rgb(204, 204, 204)]`,
+
             LeftIcon && "pl-9",
             RightIcon && "pr-9",
             error

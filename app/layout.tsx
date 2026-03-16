@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import Providers from "./providers";
+<<<<<<< HEAD
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+=======
+import MenuLayout from "./features/menu/menuLayout";
+import AlertModal from "./components/Alert";
+import ConfirmModal from "./components/ConfirmModal";
+>>>>>>> 69ebf335e1b8d395f8a7fe8eb3e06b2a58ecc4a9
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,9 +37,17 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen flex-col`}
       >
         <Providers>
+<<<<<<< HEAD
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+=======
+          {/* <MenuLayout /> */}
+
+          {children}
+          <AlertModal />
+          <ConfirmModal />
+>>>>>>> 69ebf335e1b8d395f8a7fe8eb3e06b2a58ecc4a9
         </Providers>
       </body>
     </html>

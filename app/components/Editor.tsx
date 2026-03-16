@@ -5,14 +5,21 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import React, { useState } from "react";
+import { postForm } from "../util/AxiosUtil";
+import { ApiError } from "../features/common/types/common.type";
 
-export default function Editor() {
+type EditorProps = {
+  value?: string;
+  onChange: (val: string) => void;
+};
+
+export default function Editor({ value, onChange }: EditorProps) {
   const [, forceUpdate] = useState(0);
   const editor = useEditor({
     extensions: [StarterKit, Image],
-    content: "<p></p>",
+    content: value,
     immediatelyRender: false,
-    onUpdate: () => forceUpdate((v) => v + 1),
+    onUpdate: () => onChange(editor?.getHTML() ?? ""),
     onSelectionUpdate: () => forceUpdate((v) => v + 1),
     editorProps: {
       attributes: {
@@ -30,20 +37,22 @@ export default function Editor() {
          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
      }`;
 
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await postForm<ApiError>("/api/v1/file/editor-image", formData);
+    return res.data;
+  };
+
   /** 이미지 추가 버튼 */
-  const addImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const addImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    const url = (await uploadImage(file)) as string;
 
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        editor?.chain().focus().setImage({ src: reader.result }).run();
-      }
-    };
-
-    reader.readAsDataURL(file);
+    editor?.chain().focus().setImage({ src: url }).run();
   };
 
   return (

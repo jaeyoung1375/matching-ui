@@ -36,3 +36,11 @@ export type codeResponse = {
 
   modDt?: string; // 변경일시
 };
+
+export type codeList = {
+  RECRUIT_TYPE_CD?: codeResponse[];
+  PROGRESS_TYPE_CD?: codeResponse[];
+  TECH_STACK?: codeResponse[];
+  RECRUIT_POSIT_TYPE_CD?: codeResponse[];
+  CONTACT_METHOD_CD?: codeResponse[];
+};
