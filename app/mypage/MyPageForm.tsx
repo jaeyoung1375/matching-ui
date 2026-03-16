@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import LanguageSelect from "../signup/LanguageSelect";
-import { updateUser, withdrawUser } from "@/app/features/auth/auth.query";
+import { useEffect, useState } from "react";
+import MultiSelect, { MultiSelectOption } from "../components/MultiSelectBox";
+import {
+  getLanguages,
+  updateUser,
+  withdrawUser,
+} from "@/app/features/auth/auth.query";
 import { useRouter } from "next/navigation";
+import Button from "../components/Button";
+import { useAlertStore } from "../store/alertStore";
+import { useAuth } from "../context/AuthContext";
 
 interface Props {
   defaultName: string;
@@ -16,11 +23,31 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
   const [name, setName] = useState(defaultName);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [languageOptions, setLanguageOptions] = useState<MultiSelectOption[]>(
+    [],
+  );
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const [languages, setLanguages] = useState<string[]>(defaultLanguages);
+  const { logout } = useAuth();
+
+  useEffect(() => {
+    async function loadLanguages() {
+      const langs = await getLanguages();
+
+      const mapped = langs.map((lang: any) => ({
+        value: lang.dtlCdId,
+        label: lang.dtlCdNm,
+      }));
+
+      setLanguageOptions(mapped);
+    }
+
+    loadLanguages();
+  }, []);
+
+  const setAlert = useAlertStore((state) => state.setAlert);
 
   const handleSubmit = async () => {
     const token = localStorage.getItem("accessToken");
@@ -45,8 +72,6 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
       dtlCdIds: languages,
     });
 
-    alert("회원 정보가 수정되었습니다.");
-
     window.location.reload();
   };
 
@@ -67,16 +92,12 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
-    const confirmWithdraw = confirm("정말 회원 탈퇴하시겠습니까?");
-    if (!confirmWithdraw) return;
-
     await withdrawUser(token);
 
-    alert("회원 탈퇴가 완료되었습니다.");
-
     localStorage.removeItem("accessToken");
+    logout();
 
-    router.push("/");
+    router.replace("/");
   };
 
   return (
@@ -145,27 +166,42 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
           />
         </div>
 
-        {/* 관심 기술 */}
-        <LanguageSelect
-          defaultLanguages={defaultLanguages}
-          onChange={setLanguages}
-        />
+        {/* 관심분야 */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-neutral-700">
+            관심분야
+          </label>
+
+          <MultiSelect
+            options={languageOptions}
+            value={languages}
+            onChange={setLanguages}
+            placeholder="관심분야 선택"
+          />
+        </div>
 
         {/* 수정 버튼 */}
-        <button
-          onClick={handleSubmit}
-          className="mt-2 h-12 rounded-xl bg-black text-sm font-semibold text-white hover:opacity-90"
+        <Button
+          onClick={() =>
+            setAlert("정말 수정하시겠습니까?", async () => {
+              await handleSubmit();
+            })
+          }
+          className="inline-flex items-center justify-center h-10 px-5 text-xs rounded-md bg-orange-400 text-white hover:bg-orange-500"
         >
           수정하기
-        </button>
+        </Button>
 
-        {/* 회원탈퇴 */}
-        <button
-          onClick={handleWithdraw}
-          className="h-12 rounded-xl border border-red-400 text-sm font-semibold text-red-500 hover:bg-red-50"
+        <Button
+          onClick={() =>
+            setAlert("정말 회원 탈퇴하시겠습니까?", async () => {
+              await handleWithdraw();
+            })
+          }
+          className="inline-flex items-center justify-center h-10 px-5 text-xs rounded-md bg-red-400 text-white hover:bg-red-500"
         >
           회원 탈퇴
-        </button>
+        </Button>
       </div>
     </div>
   );

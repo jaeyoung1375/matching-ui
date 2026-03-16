@@ -1,7 +1,21 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AuthLayout from "@/app/signup/AuthLayout";
 import LoginForm from "./LoginForm";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      router.replace("/");
+    }
+  }, []);
+
   return (
     <AuthLayout
       title="로그인"

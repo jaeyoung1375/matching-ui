@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import clsx from "clsx";
 
@@ -25,6 +25,25 @@ export default function MultiSelect({
   className,
 }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // 바깥 클릭시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const toggleOption = (v: string) => {
     let newValue;
@@ -43,10 +62,10 @@ export default function MultiSelect({
   };
 
   return (
-    <div className={clsx("relative w-full", className)}>
+    <div ref={wrapperRef} className={clsx("relative w-full", className)}>
       {/* 선택영역 */}
       <div
-        className="flex flex-wrap gap-2 border rounded-md px-3 py-2 min-h-[40px] cursor-pointer"
+        className="flex flex-wrap gap-2 border rounded-md px-3 py-2 min-h-[40px] max-h-[80px] overflow-y-auto"
         onClick={() => setOpen(!open)}
       >
         {value.length === 0 && (

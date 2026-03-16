@@ -16,7 +16,6 @@ export default function LoginForm() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -40,12 +39,12 @@ export default function LoginForm() {
         password,
       });
 
-      localStorage.setItem("accessToken", result.accessToken);
-      localStorage.setItem("refreshToken", result.refreshToken);
+      localStorage.setItem("accessToken", result.data.accessToken);
+      localStorage.setItem("refreshToken", result.data.refreshToken);
 
-      const res = await getMe(result.accessToken);
+      const res = await getMe(result.data.accessToken);
 
-      setAuth(res, result.accessToken);
+      setAuth(res, result.data.accessToken);
 
       router.push("/");
       router.refresh();
@@ -102,7 +101,7 @@ export default function LoginForm() {
         <Button
           type="submit"
           loading={isLoading}
-          className="mt-2 h-12 rounded-xl bg-black text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center h-10 px-5 text-xs rounded-md bg-orange-400 text-white hover:bg-orange-500"
         >
           로그인
         </Button>

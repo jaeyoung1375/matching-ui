@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import Providers from "./providers";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import Alert from "@/components/Alert";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <Alert />
         </Providers>
       </body>
     </html>

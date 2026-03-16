@@ -36,9 +36,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const fetchUser = async () => {
       try {
         const result = await getMe(token);
-        setUser(result.data);
+        setUser(result);
       } catch (err) {
         console.error(err);
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         setUser(null);
       } finally {
         setLoading(false);
@@ -64,11 +67,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    clearAuth();
+  };
+
+  const clearAuth = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-
     setUser(null);
-
     router.push("/");
   };
 

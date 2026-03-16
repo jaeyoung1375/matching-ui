@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signup, checkEmail } from "../features/auth/auth.query";
-import LanguageSelect from "./LanguageSelect";
+import { signup, checkEmail, getLanguages } from "../features/auth/auth.query";
+import Button from "../components/Button";
+import MultiSelect, { MultiSelectOption } from "../components/MultiSelectBox";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -17,6 +18,10 @@ export default function SignupForm() {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
+  const [languageOptions, setLanguageOptions] = useState<MultiSelectOption[]>(
+    [],
+  );
+
   const [emailChecked, setEmailChecked] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
 
@@ -24,6 +29,21 @@ export default function SignupForm() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadLanguages() {
+      const langs = await getLanguages();
+
+      const mapped = langs.map((lang: any) => ({
+        value: lang.dtlCdId,
+        label: lang.dtlCdNm,
+      }));
+
+      setLanguageOptions(mapped);
+    }
+
+    loadLanguages();
+  }, []);
 
   const handleCheckEmail = async () => {
     if (!email.trim()) {
@@ -33,7 +53,6 @@ export default function SignupForm() {
 
     try {
       const exists = await checkEmail(email);
-
       setEmailChecked(true);
 
       if (exists) {
@@ -128,7 +147,7 @@ export default function SignupForm() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         {/* 닉네임 */}
         <div>
           <label className="mb-2 block text-sm font-medium text-neutral-700">
@@ -162,13 +181,13 @@ export default function SignupForm() {
               className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
             />
 
-            <button
+            <Button
               type="button"
               onClick={handleCheckEmail}
-              className="h-12 whitespace-nowrap rounded-xl border border-neutral-300 px-4 text-sm hover:bg-neutral-100"
+              className="h-12 px-4 text-sm border border-neutral-300 rounded-xl hover:bg-neutral-100 whitespace-nowrap"
             >
               중복확인
-            </button>
+            </Button>
           </div>
 
           {emailChecked && emailAvailable && (
@@ -249,17 +268,29 @@ export default function SignupForm() {
         </div>
 
         {/* 관심분야 */}
-        <LanguageSelect onChange={setLanguages} />
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-neutral-700">
+            관심분야
+          </label>
+
+          <MultiSelect
+            options={languageOptions}
+            value={languages}
+            onChange={setLanguages}
+            placeholder="관심분야 선택"
+            className="h-10"
+          />
+        </div>
 
         {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
-        <button
+        <Button
           type="submit"
-          disabled={isLoading}
-          className="mt-2 h-12 rounded-xl bg-black text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
+          loading={isLoading}
+          className="mt-4 inline-flex items-center justify-center h-10 px-5 text-xs rounded-md bg-orange-400 text-white hover:bg-orange-500"
         >
-          {isLoading ? "회원가입 중..." : "회원가입"}
-        </button>
+          회원가입
+        </Button>
       </form>
 
       <div className="mt-6 text-center text-sm text-neutral-500">

@@ -9,12 +9,20 @@ import {
 
 import api, { post, get, deleteData, put } from "@/app/util/AxiosUtil";
 
-export async function login(data: LoginRequest): Promise<LoginResponse> {
-  return post<LoginResponse>("/api/v1/auth/public/login", data);
+export interface ApiResult<T> {
+  code: string;
+  message: string;
+  data: T;
 }
 
-export async function signup(data: SignupRequest): Promise<SignupResponse> {
-  return post<SignupResponse>("/api/v1/auth/public/signup", data);
+export const login = (data: LoginRequest) => {
+  return post<ApiResult<LoginResponse>>("/api/v1/auth/public/login", data);
+};
+
+export async function signup(
+  data: SignupRequest,
+): Promise<ApiResult<SignupResponse>> {
+  return post<ApiResult<SignupResponse>>("/api/v1/auth/public/signup", data);
 }
 
 export const checkEmail = (email: string) =>
