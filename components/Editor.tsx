@@ -11,9 +11,12 @@ import { ApiError } from "../features/common/types/common.type";
 type EditorProps = {
   value?: string;
   onChange: (val: string) => void;
+  tempKey: string;
 };
 
-export default function Editor({ value, onChange }: EditorProps) {
+export default function Editor({ value, onChange, tempKey }: EditorProps) {
+  const domain = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+
   const [, forceUpdate] = useState(0);
   const editor = useEditor({
     extensions: [StarterKit, Image],
@@ -40,9 +43,10 @@ export default function Editor({ value, onChange }: EditorProps) {
   const uploadImage = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("tempKey", tempKey);
 
     const res = await postForm<ApiError>("/api/v1/file/editor-image", formData);
-    return res.data;
+    return domain + res.data;
   };
 
   /** 이미지 추가 버튼 */
@@ -56,7 +60,7 @@ export default function Editor({ value, onChange }: EditorProps) {
   };
 
   return (
-    <div className="border border-black-200 rounded-lg bg-white h-[600px]">
+    <div className="border border-black-200 rounded-lg bg-white h-150">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-gray-50">
         <button

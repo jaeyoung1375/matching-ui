@@ -7,6 +7,7 @@ import { useCodeQuery } from "../features/code/code.query";
 import { useAlertStore } from "../store/alertStore";
 import { useConfirmStore } from "../store/confirmStore";
 import { useRouter } from "next/navigation";
+import Card from "../components/Card";
 
 export default function Test() {
   const router = useRouter();
@@ -47,6 +48,7 @@ export default function Test() {
       >
         비지니스 문의
       </Button>
+      <Card />
     </div>
   );
 }

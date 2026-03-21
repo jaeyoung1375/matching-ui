@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import Providers from "./providers";
-import MenuLayout from "./features/menu/menuLayout";
-import AlertModal from "./components/Alert";
-import ConfirmModal from "./components/ConfirmModal";
+import AlertModal from "@/components/Alert";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
