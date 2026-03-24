@@ -1,4 +1,4 @@
-import { get } from "@/app/util/AxiosUtil";
+import { get } from "@/util/AxiosUtil";
 import { codeList } from "./code.type";
 
 /**

@@ -1,17 +1,18 @@
 "use client";
 
-import Button from "@/app/components/Button";
-import Editor from "@/app/components/Editor";
-import Input from "@/app/components/Input";
-import Label from "@/app/components/Label";
-import MultiSelect from "@/app/components/MultiSelectBox";
-import SelectBox, { SelectOption } from "@/app/components/SelectBox";
-import TeamoDatePicker from "@/app/components/TeamoDatePicker";
-import { ApiError } from "@/app/features/common/types/common.type";
-import { PostDto } from "@/app/features/post/post.type";
-import { useAlertStore } from "@/app/store/alertStore";
-import { useConfirmStore } from "@/app/store/confirmStore";
-import { post } from "@/app/util/AxiosUtil";
+import Button from "@/components/Button";
+import Editor from "@/components/Editor";
+import Input from "@/components/Input";
+import Label from "@/components/Label";
+import MultiSelect from "@/components/MultiSelectBox";
+import SelectBox, { SelectOption } from "@/components/SelectBox";
+import TeamoDatePicker from "@/components/TeamoDatePicker";
+import { ApiError } from "@/features/common/types/common.type";
+import { PostDto } from "@/features/post/post.type";
+import { useTempKey } from "@/hooks/useTempKey";
+import { useAlertStore } from "@/store/alertStore";
+import { useConfirmStore } from "@/store/confirmStore";
+import { post } from "@/util/AxiosUtil";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 // TODO : datePicker 컴포넌트 구현
@@ -32,7 +33,10 @@ export default function PostRegister({ selectOptions }: Props) {
 
   const router = useRouter();
 
-  /** 공통코드 목록 조회 */
+  /** 임시파일 키 */
+  const tempKey = useTempKey();
+
+  /** 공통코드 조회 */
   const { recruit, progress, techStack, recruitPosit, contactMethod } =
     selectOptions;
 
@@ -51,7 +55,12 @@ export default function PostRegister({ selectOptions }: Props) {
   });
 
   const onSubmit = async (data: PostDto) => {
-    const mergedData = { ...data, userId: 36, recruitEndDate: new Date() };
+    const mergedData = {
+      ...data,
+      userId: 36,
+      recruitEndDate: new Date(),
+      tempKey: tempKey,
+    };
     const res = await post<ApiError>("/api/v1/posts", mergedData);
 
     // 성공시 메인으로 이동 (임시)
@@ -239,7 +248,11 @@ export default function PostRegister({ selectOptions }: Props) {
             name="content"
             control={control}
             render={({ field }) => (
-              <Editor value={field.value} onChange={field.onChange} />
+              <Editor
+                value={field.value}
+                onChange={field.onChange}
+                tempKey={tempKey}
+              />
             )}
           />
         </div>

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { CodeRequest, codeResponse } from "./code.type";
-import { codeToSelectOption } from "@/app/util/CommonUtil";
-import { SelectOption } from "@/app/components/SelectBox";
+import { codeToSelectOption } from "@/util/CommonUtil";
+import { SelectOption } from "@/components/SelectBox";
 import { ApiError } from "../common/types/common.type";
 import { fetchCodeList } from "./code.api";
 

@@ -1,7 +1,7 @@
-import { fetchCodeList } from "@/app/features/code/code.api";
+import { fetchCodeList } from "@/features/code/code.api";
 import PostRegister from "./postRegister";
-import { CommonCode } from "@/app/features/common/commonCode";
-import { codeToSelectOption } from "@/app/util/CommonUtil";
+import { CommonCode } from "@/features/common/commonCode";
+import { codeToSelectOption } from "@/util/CommonUtil";
 
 export default async function Page() {
   const codeList = await fetchCodeList([

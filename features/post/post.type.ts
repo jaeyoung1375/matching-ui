@@ -43,4 +43,7 @@ export type PostDto = {
 
   /** 연락방법구분코드 */
   contactMethodCd?: string;
+
+  /** 임시파일키 */
+  tempKey?: string;
 };
