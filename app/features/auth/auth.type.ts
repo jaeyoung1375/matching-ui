@@ -28,8 +28,8 @@ export interface SignupResponse {
 }
 
 export interface Language {
-  id: number;
-  name: string;
+  dtlCdId: string;
+  dtlCdNm: string;
 }
 
 export interface TechStackResponse {
