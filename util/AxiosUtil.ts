@@ -33,18 +33,8 @@ api.interceptors.response.use(
   },
 );
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
 // GET 요청
-export const get = <T>(
+export const get = async <T>(
   url: string,
   config?: AxiosRequestConfig,
 ): Promise<T> => {

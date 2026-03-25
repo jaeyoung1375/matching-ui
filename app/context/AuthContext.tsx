@@ -3,29 +3,28 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { logoutApi, getMe } from "../features/auth/auth.query";
-
-interface User {
-  id: number;
-  email: string;
-  name: string;
-}
+import { User } from "../features/auth/auth.type";
 
 interface AuthContextType {
+  // 타입 정의
   user: User | null;
   loading: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
 }
 
+// 전역 상태 저장소
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // 전역 상태 저장소에(Context)에 실제 값을 넣는 곳
   const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 렌더링 이후에 실행되는 코드
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
