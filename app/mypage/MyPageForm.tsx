@@ -66,7 +66,7 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
       }
     }
 
-    await updateUser(token, {
+    await updateUser({
       name,
       password: password || undefined,
       dtlCdIds: languages,
@@ -92,7 +92,7 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
-    await withdrawUser(token);
+    await withdrawUser();
 
     localStorage.removeItem("accessToken");
     logout();

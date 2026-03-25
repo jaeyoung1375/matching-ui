@@ -39,12 +39,12 @@ export default function LoginForm() {
         password,
       });
 
-      localStorage.setItem("accessToken", result.data.accessToken);
-      localStorage.setItem("refreshToken", result.data.refreshToken);
+      localStorage.setItem("accessToken", result.accessToken);
+      localStorage.setItem("refreshToken", result.refreshToken);
 
-      const res = await getMe(result.data.accessToken);
+      const res = await getMe();
 
-      setAuth(res, result.data.accessToken);
+      setAuth(res, result.accessToken);
 
       router.push("/");
       router.refresh();

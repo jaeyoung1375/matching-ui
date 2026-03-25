@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUser = async () => {
       try {
-        const result = await getMe(token);
+        const result = await getMe();
         setUser(result);
       } catch (err) {
         console.error(err);
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (token) {
       try {
-        await logoutApi(token);
+        await logoutApi();
       } catch (e) {
         console.error("logout api error", e);
       }
