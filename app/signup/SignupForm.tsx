@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signup, checkEmail, getLanguages } from "../features/auth/auth.query";
-import Button from "../components/Button";
-import MultiSelect, { MultiSelectOption } from "../components/MultiSelectBox";
+import Button from "@/components/Button";
+import MultiSelect, { MultiSelectOption } from "@/components/MultiSelectBox";
 
 export default function SignupForm() {
   const router = useRouter();

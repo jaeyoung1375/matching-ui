@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MultiSelect, { MultiSelectOption } from "../components/MultiSelectBox";
+import MultiSelect, { MultiSelectOption } from "@/components/MultiSelectBox";
 import {
   getLanguages,
   updateUser,
   withdrawUser,
 } from "@/app/features/auth/auth.query";
 import { useRouter } from "next/navigation";
-import Button from "../components/Button";
-import { useAlertStore } from "../store/alertStore";
+import Button from "@/components/Button";
+import { useAlertStore } from "@/store/alertStore";
 import { useAuth } from "../context/AuthContext";
 
 interface Props {

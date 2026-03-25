@@ -1,6 +1,6 @@
 "use client";
 
-import BaseModal from "@/components/ui/modal/BaseModal";
+import BaseModal from "../components/ui/modal/BaseModal";
 import Link from "next/link";
 
 interface LoginModalProps {

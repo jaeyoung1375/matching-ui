@@ -1,3 +1,4 @@
+import { post, get, put, deleteData } from "@/util/AxiosUtil";
 import {
   LoginRequest,
   LoginResponse,
@@ -6,8 +7,6 @@ import {
   Language,
   User,
 } from "./auth.type";
-
-import api, { post, get, deleteData, put } from "@/app/util/AxiosUtil";
 
 export interface ApiResult<T> {
   code: string;
