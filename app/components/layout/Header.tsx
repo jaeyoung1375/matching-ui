@@ -7,13 +7,16 @@ import { useAuth } from "@/app/context/AuthContext";
 import { PenSquare, Bell } from "lucide-react";
 import LoginModal from "@/app/login/LoginModal";
 import Image from "next/image";
+import Dropdown from "@/components/Dropdown";
+import Button from "@/components/Button";
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const router = useRouter();
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false); // 로그인 모달 열림 여부
+
+  if (loading) return null;
 
   const handleWrite = () => {
     if (!user) {
@@ -26,7 +29,7 @@ export default function Header() {
 
   const handleLogout = () => {
     logout();
-    setIsProfileOpen(false);
+    router.push("/");
   };
 
   return (
@@ -65,48 +68,44 @@ export default function Header() {
                     <Bell className="h-5 w-5" />
                   </button>
 
-                  {/* 프로필 */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsProfileOpen(!isProfileOpen)}
-                      className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-neutral-100"
+                  <Dropdown
+                    trigger={
+                      <button className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-neutral-100">
+                        <div className="h-8 w-8 rounded-full bg-neutral-300 flex items-center justify-center text-sm font-semibold">
+                          {user?.name?.[0] ?? "?"}
+                        </div>
+
+                        <span className="text-sm font-medium">
+                          {user?.name ?? ""}
+                        </span>
+                      </button>
+                    }
+                  >
+                    <Link
+                      href="/mypage"
+                      className="block px-4 py-2 text-sm hover:bg-neutral-100"
                     >
-                      <div className="h-8 w-8 rounded-full bg-neutral-300 flex items-center justify-center text-sm font-semibold">
-                        {user?.name?.[0]}
-                      </div>
+                      마이페이지
+                    </Link>
 
-                      <span className="text-sm font-medium">{user.name}</span>
-                    </button>
-
-                    {isProfileOpen && (
-                      <div className="absolute right-0 mt-2 w-40 rounded-xl border bg-white shadow-lg">
-                        <Link
-                          href="/mypage"
-                          className="block px-4 py-2 text-sm hover:bg-neutral-100"
-                        >
-                          마이페이지
-                        </Link>
-
-                        <button
-                          onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-100"
-                        >
-                          로그아웃
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                    <Button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-start"
+                    >
+                      로그아웃
+                    </Button>
+                  </Dropdown>
                 </>
               )}
 
               {/* 글쓰기 */}
-              <button
+              <Button
                 onClick={handleWrite}
+                leftIcon={PenSquare}
                 className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
               >
-                <PenSquare className="h-4 w-4" />
                 글쓰기
-              </button>
+              </Button>
             </div>
           </div>
         </div>
