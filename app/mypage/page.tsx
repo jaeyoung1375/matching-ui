@@ -12,7 +12,7 @@ export default function MyPagePage() {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
 
-      const me = await getMe(token);
+      const me = await getMe();
       setUser(me);
     };
 

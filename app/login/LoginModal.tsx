@@ -2,6 +2,7 @@
 
 import BaseModal from "../components/ui/modal/BaseModal";
 import Link from "next/link";
+import Button from "@/components/Button";
 
 interface LoginModalProps {
   open: boolean;
@@ -18,12 +19,11 @@ function SocialLoginButton({
   textClass?: string;
 }) {
   return (
-    <button
-      type="button"
+    <Button
       className={`flex h-16 w-full items-center justify-center rounded-full text-xl font-bold transition hover:opacity-90 ${bgClass} ${textClass}`}
     >
       {label}
-    </button>
+    </Button>
   );
 }
 

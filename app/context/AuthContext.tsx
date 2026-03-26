@@ -11,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
+  setUser: (user: User | null) => void;
 }
 
 // 전역 상태 저장소
@@ -77,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

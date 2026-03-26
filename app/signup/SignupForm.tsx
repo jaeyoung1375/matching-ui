@@ -73,7 +73,7 @@ export default function SignupForm() {
     setErrorMessage("");
 
     if (!name.trim()) {
-      setErrorMessage("이름을 입력해주세요.");
+      setErrorMessage("닉네임을 입력해주세요.");
       return;
     }
 

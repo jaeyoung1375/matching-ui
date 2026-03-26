@@ -16,7 +16,9 @@ export default function LoginForm() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    if (isLoading) return;
     e.preventDefault();
 
     setErrorMessage("");
@@ -47,7 +49,6 @@ export default function LoginForm() {
       setAuth(res, result.accessToken);
 
       router.push("/");
-      router.refresh();
     } catch (error: any) {
       const code = error.code;
 
@@ -75,6 +76,7 @@ export default function LoginForm() {
             이메일
           </label>
           <input
+            autoFocus
             id="login-email"
             type="email"
             placeholder="example@email.com"

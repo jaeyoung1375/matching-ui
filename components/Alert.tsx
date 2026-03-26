@@ -37,9 +37,14 @@ const AlertModal = () => {
     document.body.style.overflow = ""; // 모달 닫으면 스크롤 복구
   };
 
+  const handleCancel = () => {
+    hideAlert();
+    document.body.style.overflow = "";
+  };
+
   return (
     <div
-      onClick={handleConfirm} // 배경 클릭 시 닫기
+      onClick={handleCancel} // 배경 클릭 시 닫기
       style={{
         position: "fixed",
         inset: 0,

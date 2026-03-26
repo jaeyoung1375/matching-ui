@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import MultiSelect, { MultiSelectOption } from "@/components/MultiSelectBox";
 import {
   getLanguages,
+  getMe,
   updateUser,
   withdrawUser,
 } from "@/app/features/auth/auth.query";
@@ -30,13 +31,13 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
   const [preview, setPreview] = useState<string | null>(null);
 
   const [languages, setLanguages] = useState<string[]>(defaultLanguages);
-  const { logout } = useAuth();
+  const { logout, setUser } = useAuth();
 
   useEffect(() => {
     async function loadLanguages() {
       const langs = await getLanguages();
 
-      const mapped = langs.map((lang: any) => ({
+      const mapped = langs.map((lang) => ({
         value: lang.dtlCdId,
         label: lang.dtlCdNm,
       }));
@@ -51,7 +52,10 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
 
   const handleSubmit = async () => {
     const token = localStorage.getItem("accessToken");
-    if (!token) return;
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
 
     // 비밀번호 입력했을 때만 검증
     if (password) {
@@ -72,7 +76,10 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
       dtlCdIds: languages,
     });
 
-    window.location.reload();
+    const updatedUser = await getMe();
+    setUser(updatedUser);
+
+    router.refresh();
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,11 +189,21 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
 
         {/* 수정 버튼 */}
         <Button
-          onClick={() =>
+          onClick={() => {
+            const isChanged =
+              name !== defaultName ||
+              password !== "" ||
+              JSON.stringify(languages) !== JSON.stringify(defaultLanguages);
+
+            if (!isChanged) {
+              setAlert("변경된 내용이 없습니다.");
+              return;
+            }
+
             setAlert("정말 수정하시겠습니까?", async () => {
               await handleSubmit();
-            })
-          }
+            });
+          }}
           className="inline-flex items-center justify-center h-10 px-5 text-xs rounded-md bg-orange-400 text-white hover:bg-orange-500"
         >
           수정하기
