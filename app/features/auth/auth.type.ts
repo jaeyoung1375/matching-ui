@@ -6,9 +6,6 @@ export interface LoginRequest {
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
-  userId?: number;
-  name?: string;
-  email?: string;
 }
 
 export interface SignupRequest {
@@ -24,17 +21,11 @@ export interface SignupResponse {
   userId?: number;
   email?: string;
   name?: string;
-  message?: string;
 }
 
 export interface Language {
   dtlCdId: string;
   dtlCdNm: string;
-}
-
-export interface TechStackResponse {
-  languageId: number;
-  name: string;
 }
 
 export interface User {
@@ -44,5 +35,5 @@ export interface User {
   phone: string;
   role: string;
   profileImageUrl?: string;
-  languages: TechStackResponse[];
+  languages: Language[];
 }
