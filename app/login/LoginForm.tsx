@@ -48,12 +48,17 @@ export default function LoginForm() {
 
       router.push("/");
       router.refresh();
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("로그인 중 오류가 발생했습니다.");
+    } catch (error: any) {
+      const code = error.code;
+
+      let message = error.message || "로그인 중 오류가 발생했습니다.";
+
+      // 로그인만 예외 처리
+      if (code?.startsWith("U000")) {
+        message = "이메일 또는 비밀번호를 확인해주세요.";
       }
+
+      setErrorMessage(message);
     } finally {
       setIsLoading(false);
     }

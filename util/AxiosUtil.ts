@@ -17,7 +17,7 @@ api.interceptors.response.use(
     const { code, data, message } = res.data;
 
     if (code !== "0000") {
-      return Promise.reject({ code, message, data });
+      return Promise.reject({ code, data, message });
     }
 
     return data;
@@ -33,15 +33,26 @@ api.interceptors.response.use(
   },
 );
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
 // GET 요청
-export const get = async <T>(
+export const get = <T>(
   url: string,
   config?: AxiosRequestConfig,
 ): Promise<T> => {
   return api.get(url, config);
 };
 
-export const post = async <T>(
+// POST 요청
+export const post = <T>(
   url: string,
   data?: unknown,
   config?: AxiosRequestConfig,
@@ -49,7 +60,15 @@ export const post = async <T>(
   return api.post(url, data, config);
 };
 
-export const put = async <T>(
+// POST 요청
+export const postForm = <T>(
+  url: string,
+  data?: FormData,
+  config?: AxiosRequestConfig,
+): Promise<T> => api.postForm(url, data, config);
+
+// PUT 요청
+export const put = <T>(
   url: string,
   data?: unknown,
   config?: AxiosRequestConfig,
@@ -57,7 +76,8 @@ export const put = async <T>(
   return api.put(url, data, config);
 };
 
-export const deleteData = async <T>(
+// DELETE 요청
+export const deleteData = <T>(
   url: string,
   config?: AxiosRequestConfig,
 ): Promise<T> => {
