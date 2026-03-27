@@ -31,7 +31,7 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
   const [preview, setPreview] = useState<string | null>(null);
 
   const [languages, setLanguages] = useState<string[]>(defaultLanguages);
-  const { logout, setUser } = useAuth();
+  const { logout, setUser, user } = useAuth();
 
   useEffect(() => {
     async function loadLanguages() {
@@ -146,32 +146,36 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
         </div>
 
         {/* 비밀번호 */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-neutral-700">
-            비밀번호 변경
-          </label>
-          <input
-            type="password"
-            placeholder="변경할 비밀번호 (8자 이상)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
-          />
-        </div>
+        {user?.provider !== "GOOGLE" && (
+          <>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-neutral-700">
+                비밀번호 변경
+              </label>
+              <input
+                type="password"
+                placeholder="변경할 비밀번호 (8자 이상)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
+              />
+            </div>
 
-        {/* 비밀번호 확인 */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-neutral-700">
-            비밀번호 확인
-          </label>
-          <input
-            type="password"
-            placeholder="비밀번호를 다시 입력해주세요"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
-          />
-        </div>
+            {/* 비밀번호 확인 */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-neutral-700">
+                비밀번호 확인
+              </label>
+              <input
+                type="password"
+                placeholder="비밀번호를 다시 입력해주세요"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
+              />
+            </div>
+          </>
+        )}
 
         {/* 관심분야 */}
         <div>

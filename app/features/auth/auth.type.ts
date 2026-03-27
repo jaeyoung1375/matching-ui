@@ -35,5 +35,6 @@ export interface User {
   phone: string;
   role: string;
   profileImageUrl?: string;
+  provider: string;
   languages: Language[];
 }

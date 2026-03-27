@@ -13,13 +13,16 @@ function SocialLoginButton({
   label,
   bgClass,
   textClass = "text-black",
+  onClick,
 }: {
   label: string;
   bgClass: string;
   textClass?: string;
+  onClick?: () => void;
 }) {
   return (
     <Button
+      onClick={onClick}
       className={`flex h-16 w-full items-center justify-center rounded-full text-xl font-bold transition hover:opacity-90 ${bgClass} ${textClass}`}
     >
       {label}
@@ -50,6 +53,10 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           </Link>
 
           <SocialLoginButton
+            onClick={() => {
+              window.location.href =
+                "http://localhost:9090/oauth2/authorization/google";
+            }}
             label="Google 로그인"
             bgClass="bg-white border border-neutral-300"
           />
