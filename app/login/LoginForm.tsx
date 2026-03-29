@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login, getMe } from "../features/auth/auth.query";
+import { login, getMe } from "@/features/auth/auth.query";
 import { useAuth } from "../context/AuthContext";
 import Button from "@/components/Button";
 

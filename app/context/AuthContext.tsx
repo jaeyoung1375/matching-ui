@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { logoutApi, getMe } from "../features/auth/auth.query";
-import { User } from "../features/auth/auth.type";
+import { logoutApi, getMe } from "@/features/auth/auth.query";
+import { User } from "@/features/auth/auth.type";
 
 interface AuthContextType {
   // 타입 정의

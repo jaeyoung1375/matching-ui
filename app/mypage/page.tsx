@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getMe } from "@/app/features/auth/auth.query";
+import { getMe } from "@/features/auth/auth.query";
 import MyPageForm from "./MyPageForm";
 
 export default function MyPagePage() {
