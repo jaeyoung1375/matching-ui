@@ -1,5 +1,6 @@
 name: Front Deploy
 
+# develop 브랜치 푸시 시 자동 배포, 버튼으로 수동 배포도 가능
 on:
   push:
     branches: [develop]
@@ -14,17 +15,35 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - uses: actions/checkout@v3
+      # 1️⃣ 깃 repo 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: install
+      # 2️⃣ Node 22, npm 11 설정
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: "npm"
+
+      # 3️⃣ 패키지 설치 (lockfile 기준)
+      - name: Install dependencies
         run: npm ci
 
-      - name: build
+      # 4️⃣ Next.js 빌드
+      - name: Build Next.js
         run: npm run build
         env:
+          # 서버 환경 변수 예시
           NEXT_PUBLIC_API_URL: http://146.56.116.158:9090
+          NODE_ENV: production
 
-      - name: restart
+      # 5️⃣ pm2로 서버 재시작
+      - name: Restart server with pm2
         run: |
           pm2 stop next-app || true
-          pm2 start next-app || pm2 start npm --name next-app -- start
+          pm2 start npm --name next-app -- start
+
+      # 6️⃣ 빌드 확인 (선택)
+      - name: List build files
+        run: ls -l .next
