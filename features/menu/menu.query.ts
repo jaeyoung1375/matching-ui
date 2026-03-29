@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 /** 메뉴 목록 조회 */
 export const fetchMenuList = async () => {
-  const res = await get<Menu[]>("/menus");
+  const res = await get<Menu[]>("/public/menus");
 
   return res;
 };

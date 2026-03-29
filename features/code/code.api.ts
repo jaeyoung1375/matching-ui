@@ -17,7 +17,7 @@ import { codeList } from "./code.type";
  * codes.PROGRESS_TYPE_CD
  */
 export const fetchCodeList = async (comCdIds: string[]) => {
-  const res = await get<codeList>("/api/v1/codes", {
+  const res = await get<codeList>("/api/v1/public/codes", {
     params: { comCdIds },
   });
 

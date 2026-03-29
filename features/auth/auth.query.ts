@@ -9,15 +9,15 @@ import {
 } from "./auth.type";
 
 export const login = (data: LoginRequest) => {
-  return post<LoginResponse>("/api/v1/auth/public/login", data);
+  return post<LoginResponse>("/api/v1/public/auth/login", data);
 };
 
 export async function signup(data: SignupRequest): Promise<SignupResponse> {
-  return post<SignupResponse>("/api/v1/auth/public/signup", data);
+  return post<SignupResponse>("/api/v1/public/auth/signup", data);
 }
 
 export const checkEmail = (email: string) =>
-  get<boolean>("/api/v1/auth/public/exists-email", {
+  get<boolean>("/api/v1/public/auth/exists-email", {
     params: { email },
   });
 
@@ -26,7 +26,7 @@ export const getMe = () => get<User>("/api/v1/auth/me");
 export const logoutApi = () => post<void>("/api/v1/auth/logout");
 
 export const getLanguages = () =>
-  get<Language[]>("/api/v1/auth/public/tech-stacks");
+  get<Language[]>("/api/v1/public/auth/tech-stacks");
 
 export const updateUser = (data: any) => put("/api/v1/auth/me", data);
 
