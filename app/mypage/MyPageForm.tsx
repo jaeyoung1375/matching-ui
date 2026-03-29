@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import MultiSelect, { MultiSelectOption } from "@/components/MultiSelectBox";
 import {
   getLanguages,
@@ -13,26 +14,44 @@ import Button from "@/components/Button";
 import { useAlertStore } from "@/store/alertStore";
 import { useAuth } from "../context/AuthContext";
 
-interface Props {
-  defaultName: string;
-  defaultLanguages: string[];
+interface MyPageFormValues {
+  name: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
-export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
+export default function MyPageForm() {
   const router = useRouter();
+  const setAlert = useAlertStore((state) => state.setAlert);
+  const { logout, setUser, user } = useAuth();
 
-  const [name, setName] = useState(defaultName);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const { register, handleSubmit, setValue, watch } =
+    useForm<MyPageFormValues>();
+
   const [languageOptions, setLanguageOptions] = useState<MultiSelectOption[]>(
     [],
   );
+  const [languages, setLanguages] = useState<string[]>([]);
+
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const [languages, setLanguages] = useState<string[]>(defaultLanguages);
-  const { logout, setUser, user } = useAuth();
+  // 로그인 체크 + 초기값 세팅
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
 
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    if (user) {
+      setValue("name", user.name);
+      setLanguages(user.languages?.map((l) => l.dtlCdId) ?? []);
+    }
+  }, [user]);
+
+  // 언어 목록 로딩
   useEffect(() => {
     async function loadLanguages() {
       const langs = await getLanguages();
@@ -48,24 +67,21 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
     loadLanguages();
   }, []);
 
-  const setAlert = useAlertStore((state) => state.setAlert);
+  // submit 처리
+  const onSubmit = async (data: MyPageFormValues) => {
+    if (!user) return;
 
-  const handleSubmit = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
+    const { name, password, confirmPassword } = data;
 
-    // 비밀번호 입력했을 때만 검증
+    // 비밀번호 검증
     if (password) {
       if (password.length < 8) {
-        alert("비밀번호는 8자 이상 입력해주세요.");
+        setAlert("비밀번호는 8자 이상 입력해주세요.");
         return;
       }
 
       if (password !== confirmPassword) {
-        alert("비밀번호가 일치하지 않습니다.");
+        setAlert("비밀번호가 일치하지 않습니다.");
         return;
       }
     }
@@ -82,6 +98,17 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
     router.refresh();
   };
 
+  // 변경 여부 체크 (watch 활용)
+  const nameValue = watch("name");
+  const passwordValue = watch("password");
+
+  const isChanged =
+    nameValue !== user?.name ||
+    passwordValue ||
+    JSON.stringify(languages) !==
+      JSON.stringify(user?.languages?.map((l) => l.dtlCdId));
+
+  // 이미지 처리
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -95,10 +122,8 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
     reader.readAsDataURL(file);
   };
 
+  // 회원 탈퇴
   const handleWithdraw = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) return;
-
     await withdrawUser();
 
     localStorage.removeItem("accessToken");
@@ -107,11 +132,26 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
     router.replace("/");
   };
 
+  // 로딩 처리
+  if (!user) return <div>loading...</div>;
+
   return (
-    <div className="flex flex-col gap-8">
+    <form
+      onSubmit={handleSubmit((data) => {
+        if (!isChanged) {
+          setAlert("변경된 내용이 없습니다.");
+          return;
+        }
+
+        setAlert("정말 수정하시겠습니까?", async () => {
+          await onSubmit(data);
+        });
+      })}
+      className="flex flex-col gap-8"
+    >
       {/* 프로필 이미지 */}
       <div className="flex flex-col items-center gap-3">
-        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-neutral-300 bg-neutral-100">
+        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border bg-neutral-100">
           {preview ? (
             <img src={preview} className="h-full w-full object-cover" />
           ) : (
@@ -130,100 +170,58 @@ export default function MyPageForm({ defaultName, defaultLanguages }: Props) {
         </label>
       </div>
 
-      {/* 폼 */}
-      <div className="flex flex-col gap-6">
-        {/* 닉네임 */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-neutral-700">
-            닉네임
-          </label>
+      {/* 닉네임 */}
+      <input
+        {...register("name", {
+          required: "닉네임을 입력해주세요.",
+        })}
+        className="h-12 w-full rounded-xl border px-4"
+        placeholder="닉네임"
+      />
+
+      {/* 비밀번호 (소셜 제외) */}
+      {user.provider !== "GOOGLE" && (
+        <>
           <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
+            type="password"
+            placeholder="새 비밀번호"
+            {...register("password")}
+            className="h-12 border px-4"
           />
-        </div>
-
-        {/* 비밀번호 */}
-        {user?.provider !== "GOOGLE" && (
-          <>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">
-                비밀번호 변경
-              </label>
-              <input
-                type="password"
-                placeholder="변경할 비밀번호 (8자 이상)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
-              />
-            </div>
-
-            {/* 비밀번호 확인 */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">
-                비밀번호 확인
-              </label>
-              <input
-                type="password"
-                placeholder="비밀번호를 다시 입력해주세요"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
-              />
-            </div>
-          </>
-        )}
-
-        {/* 관심분야 */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-neutral-700">
-            관심분야
-          </label>
-
-          <MultiSelect
-            options={languageOptions}
-            value={languages}
-            onChange={setLanguages}
-            placeholder="관심분야 선택"
+          <input
+            type="password"
+            placeholder="비밀번호 확인"
+            {...register("confirmPassword")}
+            className="h-12 border px-4"
           />
-        </div>
+        </>
+      )}
 
-        {/* 수정 버튼 */}
-        <Button
-          onClick={() => {
-            const isChanged =
-              name !== defaultName ||
-              password !== "" ||
-              JSON.stringify(languages) !== JSON.stringify(defaultLanguages);
+      {/* 관심분야 */}
+      <MultiSelect
+        options={languageOptions}
+        value={languages}
+        onChange={setLanguages}
+        placeholder="관심분야 선택"
+      />
 
-            if (!isChanged) {
-              setAlert("변경된 내용이 없습니다.");
-              return;
-            }
+      {/* 수정 */}
+      <Button type="submit" className="h-10 bg-orange-400 text-white">
+        수정하기
+      </Button>
 
-            setAlert("정말 수정하시겠습니까?", async () => {
-              await handleSubmit();
-            });
-          }}
-          className="inline-flex items-center justify-center h-10 px-5 text-xs rounded-md bg-orange-400 text-white hover:bg-orange-500"
-        >
-          수정하기
-        </Button>
-
-        <Button
-          onClick={() =>
-            setAlert("정말 회원 탈퇴하시겠습니까?", async () => {
-              await handleWithdraw();
-            })
-          }
-          className="inline-flex items-center justify-center h-10 px-5 text-xs rounded-md bg-red-400 text-white hover:bg-red-500"
-        >
-          회원 탈퇴
-        </Button>
-      </div>
-    </div>
+      {/* 탈퇴 */}
+      <Button
+        type="button"
+        onClick={() =>
+          setAlert("정말 회원 탈퇴하시겠습니까?", async () => {
+            await handleWithdraw();
+          })
+        }
+        className="h-10 bg-red-400 text-white"
+      >
+        회원 탈퇴
+      </Button>
+    </form>
   );
 }
