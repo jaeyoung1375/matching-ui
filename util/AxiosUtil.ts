@@ -23,8 +23,10 @@ api.interceptors.response.use(
     return data;
   },
   (err) => {
-    // 401 자동 로그아웃
-    if (err.response?.status === 401) {
+    const status = err.response?.status;
+    const url = err.config?.url;
+    // 401 자동 로그아웃 (로그인 요청은 제외)
+    if (status === 401 && !url.includes("/auth/login")) {
       localStorage.removeItem("accessToken");
       window.location.href = "/";
     }

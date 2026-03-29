@@ -3,63 +3,69 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login, getMe } from "@/features/auth/auth.query";
+import { login } from "@/features/auth/auth.query";
 import { useAuth } from "../context/AuthContext";
 import Button from "@/components/Button";
+import { LoginRequest } from "@/features/auth/auth.type";
+import { useForm } from "react-hook-form";
+import { getMe } from "@/features/auth/auth.query";
+import { useAlertStore } from "@/store/alertStore";
+import { useEffect } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginRequest>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   const { login: setAuth } = useAuth();
-
+  const setAlert = useAlertStore((state) => state.setAlert);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  // 이미 로그인된 경우 홈으로 이동
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      router.replace("/");
+    }
+  }, []);
+
+  const onSubmit = async (data: LoginRequest) => {
     if (isLoading) return;
-    e.preventDefault();
 
     setErrorMessage("");
-
-    if (!email.trim()) {
-      setErrorMessage("이메일을 입력해주세요.");
-      return;
-    }
-
-    if (!password.trim()) {
-      setErrorMessage("비밀번호를 입력해주세요.");
-      return;
-    }
 
     try {
       setIsLoading(true);
 
-      const result = await login({
-        email,
-        password,
-      });
+      const result = await login(data);
 
       localStorage.setItem("accessToken", result.accessToken);
       localStorage.setItem("refreshToken", result.refreshToken);
 
-      const res = await getMe();
-
-      setAuth(res, result.accessToken);
+      const me = await getMe();
+      setAuth(me, result.accessToken);
 
       router.push("/");
     } catch (error: any) {
-      const code = error.code;
+      const code = error.response?.data?.code;
 
-      let message = error.message || "로그인 중 오류가 발생했습니다.";
+      let message =
+        error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
 
-      // 로그인만 예외 처리
       if (code?.startsWith("U000")) {
         message = "이메일 또는 비밀번호를 확인해주세요.";
       }
 
-      setErrorMessage(message);
+      setAlert(message);
     } finally {
       setIsLoading(false);
     }
@@ -67,40 +73,39 @@ export default function LoginForm() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
-          <label
-            htmlFor="login-email"
-            className="mb-2 block text-sm font-medium text-neutral-700"
-          >
+          <label className="mb-2 block text-sm font-medium text-neutral-700">
             이메일
           </label>
           <input
-            autoFocus
-            id="login-email"
             type="email"
             placeholder="example@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none transition focus:border-neutral-900"
+            {...register("email", {
+              required: "이메일을 입력해주세요.",
+            })}
+            className="h-12 w-full rounded-xl border px-4"
           />
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
         </div>
 
         <div>
-          <label
-            htmlFor="login-password"
-            className="mb-2 block text-sm font-medium text-neutral-700"
-          >
+          <label className="mb-2 block text-sm font-medium text-neutral-700">
             비밀번호
           </label>
           <input
-            id="login-password"
             type="password"
             placeholder="비밀번호를 입력해주세요"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none transition focus:border-neutral-900"
+            {...register("password", {
+              required: "비밀번호를 입력해주세요.",
+            })}
+            className="h-12 w-full rounded-xl border px-4"
           />
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password.message}</p>
+          )}
         </div>
 
         {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}

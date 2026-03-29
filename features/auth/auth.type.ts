@@ -1,34 +1,34 @@
-export interface LoginRequest {
+export type LoginRequest = {
   email: string;
   password: string;
-}
+};
 
-export interface LoginResponse {
+export type LoginResponse = {
   accessToken: string;
   refreshToken: string;
-}
+};
 
-export interface SignupRequest {
+export type SignupRequest = {
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
   phone: string;
   dtlCdIds: string[];
-}
+};
 
-export interface SignupResponse {
+export type SignupResponse = {
   userId?: number;
   email?: string;
   name?: string;
-}
+};
 
-export interface Language {
+export type Language = {
   dtlCdId: string;
   dtlCdNm: string;
-}
+};
 
-export interface User {
+export type User = {
   id: number;
   email: string;
   name: string;
@@ -37,4 +37,4 @@ export interface User {
   profileImageUrl?: string;
   provider: string;
   languages: Language[];
-}
+};
