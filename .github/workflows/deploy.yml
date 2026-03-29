@@ -3,6 +3,11 @@ name: Front Deploy
 on:
   push:
     branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-front
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -12,10 +17,14 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: install
-        run: npm install
+        run: npm ci
 
       - name: build
         run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://146.56.116.158:9090
 
       - name: restart
-        run: pm2 restart next-app
+        run: |
+          pm2 stop next-app || true
+          pm2 start next-app || pm2 start npm --name next-app -- start
