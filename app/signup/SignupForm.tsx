@@ -6,35 +6,39 @@ import { useRouter } from "next/navigation";
 import { signup, checkEmail, getLanguages } from "@/features/auth/auth.query";
 import Button from "@/components/Button";
 import MultiSelect, { MultiSelectOption } from "@/components/MultiSelectBox";
+import { useForm, FieldErrors } from "react-hook-form";
+import { useAlertStore } from "@/store/alertStore";
+import { SignupFormValues } from "@/features/auth/auth.type";
 
 export default function SignupForm() {
   const router = useRouter();
+  const setAlert = useAlertStore((state) => state.setAlert);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<SignupFormValues>();
 
   const [languageOptions, setLanguageOptions] = useState<MultiSelectOption[]>(
     [],
   );
+  const [languages, setLanguages] = useState<string[]>([]);
 
   const [emailChecked, setEmailChecked] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
 
-  const [languages, setLanguages] = useState<string[]>([]);
-
-  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const password = watch("password");
+
+  // 🔥 언어 로딩
   useEffect(() => {
     async function loadLanguages() {
       const langs = await getLanguages();
 
-      const mapped = langs.map((lang: any) => ({
+      const mapped = langs.map((lang) => ({
         value: lang.dtlCdId,
         label: lang.dtlCdNm,
       }));
@@ -45,79 +49,34 @@ export default function SignupForm() {
     loadLanguages();
   }, []);
 
+  // 🔥 이메일 중복 체크
   const handleCheckEmail = async () => {
-    if (!email.trim()) {
-      setErrorMessage("이메일을 입력해주세요.");
+    const email = watch("email");
+
+    if (!email?.trim()) {
+      setAlert("이메일을 입력해주세요.");
       return;
     }
 
     try {
       const exists = await checkEmail(email);
-      setEmailChecked(true);
 
-      if (exists) {
-        setEmailAvailable(false);
-        setErrorMessage("");
-      } else {
-        setEmailAvailable(true);
-        setErrorMessage("");
-      }
+      setEmailChecked(true);
+      setEmailAvailable(!exists);
     } catch {
-      setErrorMessage("이메일 확인 중 오류가 발생했습니다.");
+      setAlert("이메일 확인 중 오류가 발생했습니다.");
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    setErrorMessage("");
-
-    if (!name.trim()) {
-      setErrorMessage("닉네임을 입력해주세요.");
-      return;
-    }
-
-    if (!email.trim()) {
-      setErrorMessage("이메일을 입력해주세요.");
-      return;
-    }
-
-    if (!password.trim()) {
-      setErrorMessage("비밀번호를 입력해주세요.");
-      return;
-    }
-
-    if (!confirmPassword.trim()) {
-      setErrorMessage("비밀번호 확인을 입력해주세요.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setErrorMessage("비밀번호가 일치하지 않습니다.");
-      return;
-    }
-
-    if (password.length < 8) {
-      setPasswordError("비밀번호는 8자리 이상이어야 합니다.");
-      return;
-    }
-
-    if (confirmPasswordError.length < 8) {
-      setConfirmPasswordError("비밀번호는 8자리 이상이어야 합니다.");
-    }
-
-    if (!phone.trim()) {
-      setErrorMessage("핸드폰번호를 입력해주세요.");
-      return;
-    }
-
+  // 🔥 submit
+  const onSubmit = async (data: SignupFormValues) => {
     if (!emailChecked || !emailAvailable) {
-      setErrorMessage("이메일 중복 확인을 해주세요.");
+      setAlert("이메일 중복 확인을 해주세요.");
       return;
     }
 
     if (languages.length === 0) {
-      setErrorMessage("관심분야를 최소 1개 선택해주세요.");
+      setAlert("관심분야를 최소 1개 선택해주세요.");
       return;
     }
 
@@ -125,29 +84,34 @@ export default function SignupForm() {
       setIsLoading(true);
 
       await signup({
-        name,
-        email,
-        password,
-        confirmPassword,
-        phone,
+        ...data,
         dtlCdIds: languages,
       });
 
+      setAlert("회원가입이 완료되었습니다.");
       router.push("/login");
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("회원가입 중 오류가 발생했습니다.");
-      }
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message || "회원가입 중 오류가 발생했습니다.";
+
+      setAlert(message);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 🔥 validation 실패 시 alert
+  const onInvalid = (errors: FieldErrors<SignupFormValues>) => {
+    const first = Object.values(errors)[0];
+    setAlert(first?.message ?? "");
+  };
+
   return (
     <div>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
+        className="flex flex-col gap-6"
+      >
         {/* 닉네임 */}
         <div>
           <label className="mb-2 block text-sm font-medium text-neutral-700">
@@ -156,8 +120,9 @@ export default function SignupForm() {
           <input
             type="text"
             placeholder="닉네임을 입력해주세요"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            {...register("name", {
+              required: "닉네임을 입력해주세요.",
+            })}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />
         </div>
@@ -172,9 +137,10 @@ export default function SignupForm() {
             <input
               type="email"
               placeholder="example@email.com"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
+              {...register("email", {
+                required: "이메일을 입력해주세요.",
+              })}
+              onChange={() => {
                 setEmailChecked(false);
                 setEmailAvailable(null);
               }}
@@ -211,17 +177,13 @@ export default function SignupForm() {
           <input
             type="password"
             placeholder="비밀번호를 입력해주세요"
-            value={password}
-            onChange={(e) => {
-              const value = e.target.value;
-              setPassword(value);
-
-              if (value.length < 8) {
-                setPasswordError("비밀번호는 8자리 이상이어야 합니다.");
-              } else {
-                setPasswordError(""); // 조건 만족하면 에러 제거
-              }
-            }}
+            {...register("password", {
+              required: "비밀번호를 입력해주세요.",
+              minLength: {
+                value: 8,
+                message: "비밀번호는 8자 이상 입력해주세요.",
+              },
+            })}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />
         </div>
@@ -234,24 +196,14 @@ export default function SignupForm() {
           <input
             type="password"
             placeholder="비밀번호를 다시 입력해주세요"
-            value={confirmPassword}
-            onChange={(e) => {
-              const value = e.target.value;
-              setConfirmPassword(value);
-
-              if (password !== value) {
-                setPasswordError("비밀번호가 일치하지 않습니다.");
-              } else {
-                setPasswordError("");
-              }
-            }}
+            {...register("confirmPassword", {
+              required: "비밀번호 확인을 입력해주세요.",
+              validate: (value) =>
+                value === password || "비밀번호가 일치하지 않습니다.",
+            })}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />
         </div>
-
-        {passwordError && (
-          <p className="mt-1 text-sm text-red-500">{passwordError}</p>
-        )}
 
         {/* 핸드폰 */}
         <div>
@@ -261,8 +213,9 @@ export default function SignupForm() {
           <input
             type="tel"
             placeholder="010-0000-0000"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            {...register("phone", {
+              required: "핸드폰번호를 입력해주세요.",
+            })}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />
         </div>
@@ -281,8 +234,6 @@ export default function SignupForm() {
             className="h-10"
           />
         </div>
-
-        {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
         <Button
           type="submit"

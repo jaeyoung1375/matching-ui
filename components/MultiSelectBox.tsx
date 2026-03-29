@@ -65,7 +65,7 @@ export default function MultiSelect({
     <div ref={wrapperRef} className={clsx("relative w-full", className)}>
       {/* 선택영역 */}
       <div
-        className="flex flex-wrap gap-2 border rounded-md px-3 py-2 min-h-[40px] max-h-[80px] overflow-y-auto"
+        className="flex flex-wrap gap-2 border rounded-lg px-3 py-2 min-h-[40px] max-h-[80px] overflow-y-auto"
         onClick={() => setOpen(!open)}
       >
         {value.length === 0 && (

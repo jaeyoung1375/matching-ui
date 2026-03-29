@@ -13,12 +13,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import { useAlertStore } from "@/store/alertStore";
 import { useAuth } from "../context/AuthContext";
-
-interface MyPageFormValues {
-  name: string;
-  password?: string;
-  confirmPassword?: string;
-}
+import { MyPageFormValues } from "@/features/auth/auth.type";
 
 export default function MyPageForm() {
   const router = useRouter();
@@ -36,21 +31,20 @@ export default function MyPageForm() {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  // 로그인 체크 + 초기값 세팅
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
       router.replace("/login");
-      return;
     }
+  }, []);
 
+  useEffect(() => {
     if (user) {
       setValue("name", user.name);
       setLanguages(user.languages?.map((l) => l.dtlCdId) ?? []);
     }
   }, [user]);
-
   // 언어 목록 로딩
   useEffect(() => {
     async function loadLanguages() {
@@ -186,13 +180,13 @@ export default function MyPageForm() {
             type="password"
             placeholder="새 비밀번호"
             {...register("password")}
-            className="h-12 border px-4"
+            className="h-12 rounded-xl border px-4"
           />
           <input
             type="password"
             placeholder="비밀번호 확인"
             {...register("confirmPassword")}
-            className="h-12 border px-4"
+            className="h-12 rounded-xl border px-4"
           />
         </>
       )}

@@ -38,3 +38,17 @@ export type User = {
   provider: string;
   languages: Language[];
 };
+
+export type MyPageFormValues = {
+  name: string;
+  password?: string;
+  confirmPassword?: string;
+};
+
+export type SignupFormValues = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phone: string;
+};
