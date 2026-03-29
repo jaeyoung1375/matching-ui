@@ -13,7 +13,7 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (res: AxiosResponse<ApiResponse<any>>) => {
+  <T>(res: AxiosResponse<ApiResponse<T>>) => {
     const { code, data, message } = res.data;
 
     if (code !== "0000") {
@@ -33,15 +33,15 @@ api.interceptors.response.use(
   },
 );
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+// api.interceptors.request.use((config) => {
+//   const token = localStorage.getItem("accessToken");
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+//   if (token) {
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
 
-  return config;
-});
+//   return config;
+// });
 
 // GET 요청
 export const get = <T>(

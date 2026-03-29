@@ -1,21 +1,13 @@
+import { PostResponseDto } from "@/features/post/post.type";
+import { formatDate } from "@/util/dateUtil";
+import Image from "next/image";
+
 export type PostCardProps = {
-  type: string; // 프로젝트
-  status: string; // 따끈따끈 새 글
-  deadline: string; // 마감일
-  title: string;
-  position: string; // 마케터
-  thumbnail?: string;
-  author: string;
-  views: number;
-  comments: number;
+  list: PostResponseDto;
 };
 
-type Props = {
-  data: PostCardProps;
-};
-
-export default function Card({ data }: Props) {
-  data = {
+export default function Card({ list }: PostCardProps) {
+  const data = {
     type: "프로젝트",
     status: "따끈따끈 새 글",
     deadline: "2026.04.30",
@@ -28,11 +20,11 @@ export default function Card({ data }: Props) {
   };
 
   return (
-    <div className="w-[260px] rounded-2xl border p-4 bg-white shadow-sm hover:shadow-md transition">
+    <div className="w-65 rounded-2xl border p-4 bg-white shadow-sm hover:shadow-md transition">
       {/* 상단 뱃지 */}
       <div className="flex gap-2 mb-2">
         <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-          📁 {data.type}
+          📁 {list.recruitTypeNm} {/* 프로젝트/스터디 */}
         </span>
 
         <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
@@ -41,23 +33,36 @@ export default function Card({ data }: Props) {
       </div>
 
       {/* 마감일 */}
-      <div className="text-xs text-gray-400 mb-2">마감일 | {data.deadline}</div>
+      <div className="text-xs text-gray-400 mb-2">
+        마감일 | {formatDate(list.recruitEndDate)}
+      </div>
 
       {/* 제목 */}
       <div className="font-semibold text-sm mb-3 line-clamp-2">
-        {data.title}
+        {list.title}
       </div>
 
       {/* 포지션 */}
       <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
-        {data.position}
+        {list.recruitPositTypeNm}
       </span>
 
       {/* 썸네일 */}
-      <div className="my-4">
-        {data.thumbnail && (
-          <img src={data.thumbnail} className="w-10 h-10 rounded-full" />
-        )}
+      <div className="my-4 flex gap-2">
+        {list.techStack?.split(",").map((item) => (
+          <div
+            key={item}
+            className="relative w-8 h-8 border-2 border-white rounded-full"
+          >
+            <Image
+              src={`https://skillicons.dev/icons?i=${item.toLowerCase()}`}
+              alt={""}
+              fill
+              className="rounded-full object-cover gap-2"
+              unoptimized
+            />
+          </div>
+        ))}
       </div>
 
       <hr />
@@ -66,11 +71,11 @@ export default function Card({ data }: Props) {
       <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
         <div className="flex items-center gap-2">
           <span>🔥</span>
-          <span>{data.author}</span>
+          <span>{list.userId}</span>
         </div>
 
         <div className="flex gap-3">
-          <span>👁 {data.views}</span>
+          <span>👁 {list.viewCnt}</span>
           <span>💬 {data.comments}</span>
         </div>
       </div>

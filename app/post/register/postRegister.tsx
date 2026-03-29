@@ -14,7 +14,7 @@ import { useAlertStore } from "@/store/alertStore";
 import { useConfirmStore } from "@/store/confirmStore";
 import { post } from "@/util/AxiosUtil";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldErrors, useForm } from "react-hook-form";
 // TODO : datePicker 컴포넌트 구현
 
 type Props = {
@@ -47,7 +47,13 @@ export default function PostRegister({ selectOptions }: Props) {
    * - handleSubmit: 제출 시 데이터 수집
    * - control: Controller로 커스텀 컴포넌트(FormSelect 등) 연결
    */
-  const { register, handleSubmit, control, watch } = useForm<PostDto>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<PostDto>({
     defaultValues: {
       userId: 36,
       recruitEndDate: new Date(),
@@ -67,6 +73,11 @@ export default function PostRegister({ selectOptions }: Props) {
     if (res && res.code === "0000") {
       router.push("/");
     }
+  };
+
+  const onInvalid = (errors: FieldErrors<PostDto>) => {
+    const firstError = Object.values(errors)[0];
+    setAlert(firstError.message ?? "");
   };
 
   return (
@@ -242,8 +253,11 @@ export default function PostRegister({ selectOptions }: Props) {
           <Input
             className="select-primary w-114.75"
             placeholder="글 제목을 입력해주세요!"
-            {...register("title")}
+            {...register("title", {
+              required: "제목은 필수입니다.",
+            })}
           />
+
           <Controller
             name="content"
             control={control}
@@ -258,7 +272,10 @@ export default function PostRegister({ selectOptions }: Props) {
         </div>
         <div className="flex flex-row gap-3 justify-end">
           <Button className="btn-primary">취소</Button>
-          <Button className="btn-primary" onClick={handleSubmit(onSubmit)}>
+          <Button
+            className="btn-primary"
+            onClick={handleSubmit(onSubmit, onInvalid)}
+          >
             등록하기
           </Button>
         </div>
