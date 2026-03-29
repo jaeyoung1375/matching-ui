@@ -106,3 +106,7 @@ export type PostResponseDto = {
   /** 연락방법구분코드명 */
   contactMethodNm?: string;
 };
+
+export type PostRequest = {
+  keyword?: string; // 검색어
+};

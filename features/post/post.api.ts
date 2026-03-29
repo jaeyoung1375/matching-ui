@@ -1,8 +1,8 @@
 import { get } from "@/util/AxiosUtil";
-import { PostResponseDto } from "./post.type";
+import { PostRequest, PostResponseDto } from "./post.type";
 
-export const fetchPostList = async () => {
-  const res = await get<PostResponseDto[]>("/api/v1/public/posts");
+export const fetchPostList = async (params?: PostRequest) => {
+  const res = await get<PostResponseDto[]>("/api/v1/public/posts", { params });
 
   return res;
 };

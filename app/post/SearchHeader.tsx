@@ -5,15 +5,29 @@ import { SelectOptions } from "./PostList";
 import SelectBox from "@/components/SelectBox";
 import Button from "@/components/Button";
 import { Search } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { PostRequest } from "@/features/post/post.type";
 
 type searchHeaderProps = {
   selectOptions: SelectOptions;
+  onSearch: (formData: PostRequest) => void;
 };
 
-export default function SearchHeader({ selectOptions }: searchHeaderProps) {
+export default function SearchHeader({
+  selectOptions,
+  onSearch,
+}: searchHeaderProps) {
   const category = selectOptions.recruit;
 
   const [active, setActive] = useState<string>("");
+
+  const { register, handleSubmit } = useForm<PostRequest>();
+
+  const onSubmit = (data: PostRequest) => {
+    // 부모 컴포넌트로 검색 조건 전달
+
+    onSearch(data);
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 space-y-4">
@@ -80,9 +94,13 @@ export default function SearchHeader({ selectOptions }: searchHeaderProps) {
           <input
             placeholder="제목, 글 내용을 검색해보세요."
             className="border rounded-lg pl-10 pr-4 py-2 w-70"
+            {...register("keyword")}
           />
 
-          <Button className="absolute left-3 top-1/2 -translate-y-1/2 w-4">
+          <Button
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4"
+            onClick={handleSubmit(onSubmit)}
+          >
             <Search className="w-4 h-4" />
           </Button>
         </div>

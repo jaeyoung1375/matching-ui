@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { CommonCode } from "@/features/common/commonCode";
 import { fetchCodeList } from "@/features/code/code.api";
 import { codeToSelectOption } from "@/util/CommonUtil";
+import { PostRequest } from "@/features/post/post.type";
 
 export type SelectOptions = {
   techStack: SelectOption[];
@@ -47,12 +48,21 @@ export default function PostList() {
     fetchData();
   }, []);
 
+  const [keyword, setKeyword] = useState<string>("");
+
+  const { data: post } = usePostListQuery({ keyword: keyword });
+
+  const handleSearch = (formData: PostRequest) => {
+    console.log("formData : ", formData);
+    setKeyword(formData.keyword ?? "");
+  };
+
   return (
     <>
       <div className="max-w-6xl mx-auto px-4">
-        <SearchHeader selectOptions={selectOptions} />
+        <SearchHeader selectOptions={selectOptions} onSearch={handleSearch} />
         <div className="grid grid-cols-4 gap-4 mt-16">
-          {postList?.map((item) => {
+          {post?.map((item) => {
             return <Card key={item.postId} list={item} />;
           })}
         </div>
