@@ -2,6 +2,7 @@
 "use client";
 import { forwardRef, useState } from "react";
 import clsx from "clsx";
+import { cn } from "@/util/cn";
 
 type SelectSize = "sm" | "md" | "lg";
 
@@ -31,13 +32,13 @@ const SelectBox = forwardRef<HTMLSelectElement, SelectProps>(
     const [value, setValue] = useState<string>();
 
     return (
-      <div className="relative w-full">
+      <div className={cn("relative w-full", className)}>
         <select
           value={value}
           onChange={(e) => setValue(e.target.value)}
           ref={ref}
           className={clsx(
-            `${className} border border-[rgb(204, 204, 204)]`,
+            `${className} border rounded-lg border-[rgb(204, 204, 204)]`,
             !value ? "text-gray-400" : "text-black ",
           )}
           {...props}

@@ -24,7 +24,7 @@ export default function Header() {
       return;
     }
 
-    router.push("/write");
+    router.push("/post/register");
   };
 
   const handleLogout = () => {

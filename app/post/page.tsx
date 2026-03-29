@@ -1,3 +1,3 @@
-export default function Post() {
-  <></>;
+export default async function Post() {
+  return <></>;
 }
