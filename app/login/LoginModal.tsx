@@ -62,12 +62,23 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           />
 
           <SocialLoginButton
+            onClick={() => {
+              window.location.href =
+                "http://localhost:9090/oauth2/authorization/github";
+            }}
             label="Github 로그인"
             bgClass="bg-black"
             textClass="text-white"
           />
 
-          <SocialLoginButton label="Kakao 로그인" bgClass="bg-[#FEE500]" />
+          <SocialLoginButton
+            onClick={() => {
+              window.location.href =
+                "http://localhost:9090/oauth2/authorization/kakao";
+            }}
+            label="Kakao 로그인"
+            bgClass="bg-[#FEE500]"
+          />
         </div>
       </div>
     </BaseModal>

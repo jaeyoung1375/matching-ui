@@ -39,12 +39,6 @@ export default function MyPageForm() {
     }
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      setValue("name", user.name);
-      setLanguages(user.languages?.map((l) => l.dtlCdId) ?? []);
-    }
-  }, [user]);
   // 언어 목록 로딩
   useEffect(() => {
     async function loadLanguages() {
