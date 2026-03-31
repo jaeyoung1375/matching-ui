@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "@/features/auth/auth.query";
+import { login, getMe } from "@/features/auth/auth.query";
 import { useAuth } from "../context/AuthContext";
 import Button from "@/components/Button";
 import { LoginRequest } from "@/features/auth/auth.type";
 import { useForm } from "react-hook-form";
-import { getMe } from "@/features/auth/auth.query";
 import { useAlertStore } from "@/store/alertStore";
-import { useEffect } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -27,7 +25,6 @@ export default function LoginForm() {
   });
   const { login: setAuth } = useAuth();
   const setAlert = useAlertStore((state) => state.setAlert);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   // 이미 로그인된 경우 홈으로 이동
@@ -40,8 +37,6 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginRequest) => {
     if (isLoading) return;
-
-    setErrorMessage("");
 
     try {
       setIsLoading(true);
@@ -107,8 +102,6 @@ export default function LoginForm() {
             <p className="text-sm text-red-500">{errors.password.message}</p>
           )}
         </div>
-
-        {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
         <Button
           type="submit"
