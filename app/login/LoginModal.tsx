@@ -54,8 +54,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
           <SocialLoginButton
             onClick={() => {
-              window.location.href =
-                "http://localhost:9090/oauth2/authorization/google";
+              window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth2/authorization/google`;
             }}
             label="Google 로그인"
             bgClass="bg-white border border-neutral-300"
@@ -63,8 +62,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
           <SocialLoginButton
             onClick={() => {
-              window.location.href =
-                "http://localhost:9090/oauth2/authorization/github";
+              window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth2/authorization/github`;
             }}
             label="Github 로그인"
             bgClass="bg-black"
@@ -73,8 +71,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
           <SocialLoginButton
             onClick={() => {
-              window.location.href =
-                "http://localhost:9090/oauth2/authorization/kakao";
+              window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth2/authorization/kakao`;
             }}
             label="Kakao 로그인"
             bgClass="bg-[#FEE500]"
