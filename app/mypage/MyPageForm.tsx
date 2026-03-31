@@ -20,8 +20,25 @@ export default function MyPageForm() {
   const setAlert = useAlertStore((state) => state.setAlert);
   const { logout, setUser, user } = useAuth();
 
-  const { register, handleSubmit, setValue, watch } =
+  const { register, handleSubmit, setValue, watch, reset } =
     useForm<MyPageFormValues>();
+
+  useEffect(() => {
+    if (user) {
+      reset({
+        name: user.name,
+      });
+
+      if (user.languages) {
+        const userLangIds = user.languages.map((l: any) => l.dtlCdId);
+        setLanguages(userLangIds);
+      }
+
+      if (user.profileImageUrl) {
+        setPreview(user.profileImageUrl);
+      }
+    }
+  }, [user, reset]);
 
   const [languageOptions, setLanguageOptions] = useState<MultiSelectOption[]>(
     [],
@@ -121,7 +138,7 @@ export default function MyPageForm() {
   };
 
   // 로딩 처리
-  if (!user) return <div>loading...</div>;
+  if (!user) return null;
 
   return (
     <form
