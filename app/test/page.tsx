@@ -5,15 +5,25 @@ import Button from "@/components/Button";
 import { useAlertStore } from "@/store/alertStore";
 import { useConfirmStore } from "@/store/confirmStore";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Test() {
   const router = useRouter();
 
+  const [preview, setPreview] = useState<string>("");
   /** ALERT 선언 */
   const setAlert = useAlertStore((state) => state.setAlert);
 
   /** Confirm 선언 */
   const setConfirm = useConfirmStore((state) => state.setConfirm);
+
+  const handleCreateImg = (e: any) => {
+    const file = e.target.files[0];
+    if (file) {
+      const preview = URL.createObjectURL(file);
+      setPreview(preview);
+    }
+  };
 
   return (
     <div className="min-h-[1400px]">
@@ -45,6 +55,8 @@ export default function Test() {
       >
         비지니스 문의
       </Button>
+      <input type="file" onChange={handleCreateImg} />
+      {preview && <img src={preview} />}
     </div>
   );
 }

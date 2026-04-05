@@ -39,22 +39,24 @@ export default function PostList() {
 
       setSelectOptions({
         techStack: codeToSelectOption(codeList.TECH_STACK ?? []),
-        recruitPosit: codeToSelectOption(codeList.RECRUIT_POSIT_TYPE_CD ?? []),
-        progress: codeToSelectOption(codeList.PROGRESS_TYPE_CD ?? []),
-        recruit: codeToSelectOption(codeList.RECRUIT_TYPE_CD ?? []),
+        recruitPosit: codeToSelectOption(
+          codeList.RECRUIT_POSIT_TYPE_CD ?? [],
+          true,
+        ),
+        progress: codeToSelectOption(codeList.PROGRESS_TYPE_CD ?? [], true),
+        recruit: codeToSelectOption(codeList.RECRUIT_TYPE_CD ?? [], true),
       });
     };
 
     fetchData();
   }, []);
 
-  const [keyword, setKeyword] = useState<string>("");
+  const [search, setSearch] = useState<PostRequest>();
 
-  const { data: post } = usePostListQuery({ keyword: keyword });
+  const { data: post } = usePostListQuery(search);
 
   const handleSearch = (formData: PostRequest) => {
-    console.log("formData : ", formData);
-    setKeyword(formData.keyword ?? "");
+    setSearch(formData);
   };
 
   return (

@@ -29,23 +29,29 @@ interface SelectProps extends Omit<
 
 const SelectBox = forwardRef<HTMLSelectElement, SelectProps>(
   ({ options, size = "md", placeholder, className, ...props }, ref) => {
-    const [value, setValue] = useState<string>();
+    const placeholderValue = "__placeholder__";
+    const [isPlaceholder, setIsPlaceholder] = useState(true);
+
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setIsPlaceholder(!e.target.value);
+      props.onChange?.(e);
+    };
 
     return (
       <div className={cn("relative w-full", className)}>
         <select
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
           ref={ref}
+          defaultValue={placeholder ? placeholderValue : ""}
+          onChange={handleChange}
           className={clsx(
-            `${className} border rounded-lg border-[rgb(204, 204, 204)]`,
-            !value ? "text-gray-400" : "text-black ",
+            "border rounded-lg border-[rgb(204, 204, 204)] w-full",
+            isPlaceholder ? "text-gray-400" : "text-black",
+            className,
           )}
           {...props}
-          defaultValue=""
         >
           {placeholder && (
-            <option value="" disabled hidden>
+            <option value={placeholderValue} disabled>
               {placeholder}
             </option>
           )}
