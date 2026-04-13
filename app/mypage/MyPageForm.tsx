@@ -20,6 +20,10 @@ export default function MyPageForm() {
   const setAlert = useAlertStore((state) => state.setAlert);
   const { logout, setUser, user } = useAuth();
 
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawPassword, setWithdrawPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const { register, handleSubmit, setValue, watch, reset } =
     useForm<MyPageFormValues>();
 
@@ -127,16 +131,6 @@ export default function MyPageForm() {
     reader.readAsDataURL(file);
   };
 
-  // 회원 탈퇴
-  const handleWithdraw = async () => {
-    await withdrawUser();
-
-    localStorage.removeItem("accessToken");
-    logout();
-
-    router.replace("/");
-  };
-
   // 로딩 처리
   if (!user) return null;
 
@@ -154,6 +148,76 @@ export default function MyPageForm() {
       })}
       className="flex flex-col gap-8"
     >
+      {/* 🔥 여기!!!! (form 바로 아래) */}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl w-80 flex flex-col gap-4">
+            <h2 className="text-lg font-bold">회원 탈퇴</h2>
+
+            {!["GOOGLE", "KAKAO", "GITHUB"].includes(user.provider) && (
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="현재 비밀번호 입력"
+                  value={withdrawPassword}
+                  onChange={(e) => setWithdrawPassword(e.target.value)}
+                  className="h-10 border rounded px-3 w-full"
+                />
+
+                <button
+                  type="button"
+                  className="absolute right-2 top-2 text-sm"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? "숨김" : "보기"}
+                </button>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <button
+                className="flex-1 bg-gray-300 rounded h-10"
+                onClick={() => {
+                  setShowWithdrawModal(false);
+                  setWithdrawPassword("");
+                }}
+              >
+                취소
+              </button>
+
+              <button
+                className="flex-1 bg-red-500 text-white rounded h-10"
+                onClick={async () => {
+                  try {
+                    if (
+                      !["GOOGLE", "KAKAO", "GITHUB"].includes(user.provider)
+                    ) {
+                      if (!withdrawPassword) {
+                        setAlert("비밀번호를 입력해주세요.");
+                        return;
+                      }
+
+                      await withdrawUser({
+                        currentPassword: withdrawPassword,
+                      });
+                    } else {
+                      await withdrawUser();
+                    }
+
+                    localStorage.removeItem("accessToken");
+                    logout();
+                    router.replace("/");
+                  } catch {
+                    setAlert("비밀번호가 일치하지 않습니다.");
+                  }
+                }}
+              >
+                탈퇴
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* 프로필 이미지 */}
       <div className="flex flex-col items-center gap-3">
         <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border bg-neutral-100">
@@ -174,7 +238,6 @@ export default function MyPageForm() {
           />
         </label>
       </div>
-
       {/* 닉네임 */}
       <input
         {...register("name", {
@@ -183,9 +246,8 @@ export default function MyPageForm() {
         className="h-12 w-full rounded-xl border px-4"
         placeholder="닉네임"
       />
-
       {/* 비밀번호 (소셜 제외) */}
-      {user.provider !== "GOOGLE" && (
+      {!["GOOGLE", "KAKAO", "GITHUB"].includes(user.provider) && (
         <>
           <input
             type="password"
@@ -201,7 +263,6 @@ export default function MyPageForm() {
           />
         </>
       )}
-
       {/* 관심분야 */}
       <MultiSelect
         options={languageOptions}
@@ -209,24 +270,19 @@ export default function MyPageForm() {
         onChange={setLanguages}
         placeholder="관심분야 선택"
       />
-
       {/* 수정 */}
       <Button type="submit" className="h-10 bg-orange-400 text-white">
         수정하기
       </Button>
-
       {/* 탈퇴 */}
       <Button
         type="button"
-        onClick={() =>
-          setAlert("정말 회원 탈퇴하시겠습니까?", async () => {
-            await handleWithdraw();
-          })
-        }
+        onClick={() => setShowWithdrawModal(true)}
         className="h-10 bg-red-400 text-white"
       >
         회원 탈퇴
       </Button>
+      <></>
     </form>
   );
 }

@@ -30,4 +30,8 @@ export const getLanguages = () =>
 
 export const updateUser = (data: any) => put("/api/v1/auth/me", data);
 
-export const withdrawUser = () => deleteData("/api/v1/auth/me");
+export const withdrawUser = (data?: { currentPassword?: string }) => {
+  return deleteData("/api/v1/auth/me", {
+    data,
+  });
+};

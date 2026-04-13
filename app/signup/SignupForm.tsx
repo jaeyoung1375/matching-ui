@@ -58,6 +58,13 @@ export default function SignupForm() {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      setAlert("올바른 이메일 형식을 입력해주세요");
+      return;
+    }
+
     try {
       const exists = await checkEmail(email);
 

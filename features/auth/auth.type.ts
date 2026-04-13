@@ -43,6 +43,7 @@ export type MyPageFormValues = {
   name: string;
   password?: string;
   confirmPassword?: string;
+  currentPassword?: string;
 };
 
 export type SignupFormValues = {
