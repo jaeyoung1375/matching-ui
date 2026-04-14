@@ -148,7 +148,6 @@ export default function MyPageForm() {
       })}
       className="flex flex-col gap-8"
     >
-      {/* 🔥 여기!!!! (form 바로 아래) */}
       {showWithdrawModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-80 flex flex-col gap-4">
@@ -186,6 +185,7 @@ export default function MyPageForm() {
               </button>
 
               <button
+                type="button"
                 className="flex-1 bg-red-500 text-white rounded h-10"
                 onClick={async () => {
                   try {
