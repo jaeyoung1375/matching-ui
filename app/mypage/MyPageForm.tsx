@@ -207,8 +207,17 @@ export default function MyPageForm() {
                     localStorage.removeItem("accessToken");
                     logout();
                     router.replace("/");
-                  } catch {
-                    setAlert("비밀번호가 일치하지 않습니다.");
+                  } catch (error: any) {
+                    const code = error?.response?.data?.code;
+                    if (code === "U0010") {
+                      setAlert("다시 로그인 후 탈퇴해주세요.", () => {
+                        logout();
+                        localStorage.removeItem("accessToken");
+                        router.replace("/login");
+                      });
+                    } else {
+                      setAlert("비밀번호가 일치하지 않습니다.");
+                    }
                   }
                 }}
               >
