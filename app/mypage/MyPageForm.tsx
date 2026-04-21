@@ -14,6 +14,7 @@ import Button from "@/components/Button";
 import { useAlertStore } from "@/store/alertStore";
 import { useAuth } from "../context/AuthContext";
 import { MyPageFormValues } from "@/features/auth/auth.type";
+import { uploadProfileImage } from "@/features/auth/auth.query";
 
 export default function MyPageForm() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function MyPageForm() {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawPassword, setWithdrawPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { register, handleSubmit, setValue, watch, reset } =
     useForm<MyPageFormValues>();
 
@@ -39,7 +40,7 @@ export default function MyPageForm() {
       }
 
       if (user.profileImageUrl) {
-        setPreview(user.profileImageUrl);
+        setPreview(`${baseUrl}${user.profileImageUrl}`);
       }
     }
   }, [user, reset]);
@@ -95,6 +96,10 @@ export default function MyPageForm() {
       }
     }
 
+    if (profileImage) {
+      await uploadProfileImage(profileImage);
+    }
+
     await updateUser({
       name,
       password: password || undefined,
@@ -115,7 +120,8 @@ export default function MyPageForm() {
     nameValue !== user?.name ||
     passwordValue ||
     JSON.stringify(languages) !==
-      JSON.stringify(user?.languages?.map((l) => l.dtlCdId));
+      JSON.stringify(user?.languages?.map((l) => l.dtlCdId)) ||
+    profileImage !== null;
 
   // 이미지 처리
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

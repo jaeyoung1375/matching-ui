@@ -13,7 +13,7 @@ import Button from "@/components/Button";
 export default function Header() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [isLoginOpen, setIsLoginOpen] = useState(false); // 로그인 모달 열림 여부
 
   if (loading) return null;
@@ -70,8 +70,16 @@ export default function Header() {
                   <Dropdown
                     trigger={
                       <button className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-neutral-100">
-                        <div className="h-8 w-8 rounded-full bg-neutral-300 flex items-center justify-center text-sm font-semibold">
-                          {user?.name?.[0] ?? "?"}
+                        <div className="h-8 w-8 rounded-full overflow-hidden bg-neutral-300 flex items-center justify-center text-sm font-semibold">
+                          {user?.profileImageUrl ? (
+                            <img
+                              src={`${baseUrl}${user.profileImageUrl}`}
+                              alt="profile"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            (user?.name?.[0] ?? "?")
+                          )}
                         </div>
 
                         <span className="text-sm font-medium">
