@@ -109,7 +109,8 @@ export default function MyPageForm() {
     const updatedUser = await getMe();
     setUser(updatedUser);
 
-    router.refresh();
+    router.replace("/mypage");
+    reset();
   };
 
   // 변경 여부 체크 (watch 활용)

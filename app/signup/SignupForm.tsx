@@ -9,10 +9,13 @@ import MultiSelect, { MultiSelectOption } from "@/components/MultiSelectBox";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useAlertStore } from "@/store/alertStore";
 import { SignupFormValues } from "@/features/auth/auth.type";
+import { getMe } from "@/features/auth/auth.query";
+import { useAuth } from "../context/AuthContext";
 
 export default function SignupForm() {
   const router = useRouter();
   const setAlert = useAlertStore((state) => state.setAlert);
+  const { setUser } = useAuth();
 
   const {
     register,
@@ -75,7 +78,6 @@ export default function SignupForm() {
     }
   };
 
-  // 🔥 submit
   const onSubmit = async (data: SignupFormValues) => {
     if (!emailChecked || !emailAvailable) {
       setAlert("이메일 중복 확인을 해주세요.");
@@ -90,13 +92,19 @@ export default function SignupForm() {
     try {
       setIsLoading(true);
 
-      await signup({
+      const res = await signup({
         ...data,
         dtlCdIds: languages,
       });
 
-      setAlert("회원가입이 완료되었습니다.");
-      router.push("/login");
+      localStorage.setItem("accessToken", res.accessToken);
+
+      const me = await getMe();
+      setUser(me);
+
+      setAlert("회원가입이 완료되었습니다.", () => {
+        router.replace("/");
+      });
     } catch (error: any) {
       const message =
         error.response?.data?.message || "회원가입 중 오류가 발생했습니다.";
@@ -107,7 +115,6 @@ export default function SignupForm() {
     }
   };
 
-  // 🔥 validation 실패 시 alert
   const onInvalid = (errors: FieldErrors<SignupFormValues>) => {
     const first = Object.values(errors)[0];
     setAlert(first?.message ?? "");

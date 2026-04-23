@@ -21,6 +21,8 @@ export type SignupResponse = {
   userId?: number;
   email?: string;
   name?: string;
+  accessToken: string;
+  refreshToken: string;
 };
 
 export type Language = {
