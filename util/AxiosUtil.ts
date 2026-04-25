@@ -13,20 +13,20 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (res: AxiosResponse<ApiResponse<any>>) => {
+  (res: AxiosResponse<ApiResponse<unknown>>) => {
     const { code, data, message } = res.data;
 
     if (code !== "0000") {
       return Promise.reject({ code, data, message });
     }
 
-    return data;
+    return res;
   },
   (err) => {
     const status = err.response?.status;
     const url = err.config?.url;
-    // 401 자동 로그아웃 (로그인 요청은 제외)
-    if (status === 401 && !url.includes("/auth/login")) {
+
+    if (status === 401 && !url?.includes("/auth/login")) {
       localStorage.removeItem("accessToken");
       window.location.href = "/";
     }
@@ -48,44 +48,61 @@ api.interceptors.request.use((config) => {
 });
 
 // GET 요청
-export const get = <T>(
-  url: string,
-  config?: AxiosRequestConfig,
-): Promise<T> => {
-  return api.get(url, config);
+export const get = async <T>(url: string, config?: AxiosRequestConfig) => {
+  const res = await api.get<ApiResponse<T>>(url, config);
+
+  return res.data.data;
 };
 
 // POST 요청
-export const post = <T>(
+export const post = async <T>(
   url: string,
-  data?: unknown,
+  body?: unknown,
   config?: AxiosRequestConfig,
-): Promise<T> => {
-  return api.post(url, data, config);
+) => {
+  const res = await api.post<ApiResponse<T>>(url, body, config);
+
+  const { code, message, data } = res.data;
+
+  return { code, message, data };
 };
 
 // POST 요청
-export const postForm = <T>(
+export const postForm = async <T>(
   url: string,
-  data?: FormData,
+  body?: FormData,
   config?: AxiosRequestConfig,
-): Promise<T> => api.postForm(url, data, config);
+) => {
+  const res = await api.postForm<ApiResponse<T>>(url, body, config);
 
-// PUT 요청
-export const put = <T>(
-  url: string,
-  data?: unknown,
-  config?: AxiosRequestConfig,
-): Promise<T> => {
-  return api.put(url, data, config);
+  const { code, message, data } = res.data;
+
+  return { code, message, data };
 };
 
 // DELETE 요청
-export const deleteData = <T>(
+export const deleteData = async <T>(
   url: string,
   config?: AxiosRequestConfig,
-): Promise<T> => {
-  return api.delete(url, config);
+) => {
+  const res = await api.delete<ApiResponse<T>>(url, config);
+
+  const { code, data } = res.data;
+
+  return { code, data };
+};
+
+// PUT 요청
+export const put = async <T>(
+  url: string,
+  body?: unknown,
+  config?: AxiosRequestConfig,
+) => {
+  const res = await api.put<ApiResponse<T>>(url, body, config);
+
+  const { code, message, data } = res.data;
+
+  return { code, message, data };
 };
 
 export default api;
