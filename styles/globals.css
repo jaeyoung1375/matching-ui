@@ -110,3 +110,51 @@
 .react-datepicker__day-name {
   font-size: 21px;
 }
+
+.multi-select {
+  position: relative;
+}
+
+.select-btn {
+  height: 38px;
+  width: 140px;
+  border: 1px solid #e3e3e3;
+  color: #646464;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  border-radius: 36px;
+  background-color: #fff;
+  padding-left: 18px;
+  padding-right: 10px;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.dropdown {
+  position: absolute;
+  top: 40px;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 16px;
+  width: 600px;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  padding: 6px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 14px;
+  background: white;
+}
+
+.tag.active {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}

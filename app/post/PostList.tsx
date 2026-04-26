@@ -20,7 +20,6 @@ export default function PostList() {
   /**
    * 게시글 목록을 조회하는 React Query 훅을 사용하여 데이터를 가져옵니다.
    */
-  const { data: postList } = usePostListQuery();
   const [selectOptions, setSelectOptions] = useState<SelectOptions>({
     techStack: [],
     recruitPosit: [],

@@ -1,5 +1,5 @@
 import { get } from "@/util/AxiosUtil";
-import { codeList } from "./code.type";
+import { codeList, CodeRequest, codeResponse } from "./code.type";
 
 /**
  * 공통 코드 목록 조회
@@ -16,9 +16,17 @@ import { codeList } from "./code.type";
  * codes.RECRUIT_TYPE_CD
  * codes.PROGRESS_TYPE_CD
  */
-export const fetchCodeList = async (comCdIds: string[]) => {
-  const res = await get<codeList>("/api/v1/public/codes", {
-    params: { comCdIds },
+export const fetchCodeList = (comCdIds: string[], param?: CodeRequest) => {
+  const res = get<codeList>("/api/v1/public/codes", {
+    params: { comCdIds, param },
+  });
+
+  return res;
+};
+
+export const fetchCode = async (param?: CodeRequest) => {
+  const res = await get<codeResponse[]>("/api/v1/public/code", {
+    params: param,
   });
 
   return res;

@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/Button";
+import DropButton from "@/components/DropButton";
 import Editor from "@/components/Editor";
 import Input from "@/components/Input";
 import Label from "@/components/Label";
@@ -68,6 +69,8 @@ export default function PostRegister({ selectOptions }: Props) {
       tempKey: tempKey,
     };
     const res = await post<ApiError>("/api/v1/posts", mergedData);
+
+    console.log("res : ", res);
 
     // 성공시 메인으로 이동 (임시)
     if (res && res.code === "0000") {
@@ -176,10 +179,9 @@ export default function PostRegister({ selectOptions }: Props) {
               name="techStackTypeCd"
               control={control}
               render={({ field }) => (
-                <MultiSelect
-                  className="select-primary w-114.75"
+                <DropButton
                   options={techStack}
-                  placeholder="프로젝트 사용 스택"
+                  className="select-primary w-114.75"
                   {...field}
                 />
               )}

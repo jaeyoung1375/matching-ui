@@ -1,7 +1,9 @@
 // 요청 타입
 export type CodeRequest = {
   comCdId?: string; // 공통코드아이디
+  comCdIds?: string[]; // 공통코드아이디
   dtlCdId?: string; // 상세코드아이디
+  dtlCdExpln?: string;
 };
 
 // 응답 타입

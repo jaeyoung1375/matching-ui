@@ -7,6 +7,7 @@ import Button from "@/components/Button";
 import { Search } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { PostRequest } from "@/features/post/post.type";
+import DropButton from "@/components/DropButton";
 
 type searchHeaderProps = {
   selectOptions: SelectOptions;
@@ -40,7 +41,6 @@ export default function SearchHeader({
 
   return (
     <form>
-      {" "}
       <div className="max-w-6xl mx-auto px-4 space-y-4">
         {/* 카테고리 */}
         <div className="flex items-center justify-between">
@@ -74,11 +74,11 @@ export default function SearchHeader({
             control={control}
             name="techStackTypeCd"
             render={({ field }) => (
-              <SelectBox
-                placeholder="기술 스택"
+              <DropButton
                 className=" text-gray-600 w-50 h-12"
                 options={selectOptions.techStack}
-                {...field}
+                value={field.value}
+                onChange={(values) => field.onChange(values)}
               />
             )}
           />

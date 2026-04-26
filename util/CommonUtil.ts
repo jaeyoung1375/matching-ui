@@ -13,6 +13,7 @@ export const codeToSelectOption = (
   const option = codes.map((code) => ({
     label: code.dtlCdNm,
     value: code.dtlCdId,
+    explain: code.dtlCdExpln,
   }));
 
   if (includeAll) {
