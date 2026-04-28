@@ -13,7 +13,8 @@ export const login = (data: LoginRequest) => {
 };
 
 export async function signup(data: SignupRequest): Promise<SignupResponse> {
-  return post<SignupResponse>("/api/v1/public/auth/signup", data);
+  const res = await post<SignupResponse>("/api/v1/public/auth/signup", data);
+  return res.data;
 }
 
 export const checkEmail = (email: string) =>

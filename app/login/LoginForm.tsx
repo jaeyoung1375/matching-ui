@@ -43,11 +43,11 @@ export default function LoginForm() {
 
       const result = await login(data);
 
-      localStorage.setItem("accessToken", result.accessToken);
-      localStorage.setItem("refreshToken", result.refreshToken);
+      localStorage.setItem("accessToken", result.data.accessToken);
+      localStorage.setItem("refreshToken", result.data.refreshToken);
 
       const me = await getMe();
-      setAuth(me, result.accessToken);
+      setAuth(me, result.data.accessToken);
 
       router.push("/");
     } catch (error: any) {
