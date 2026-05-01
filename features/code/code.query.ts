@@ -1,19 +1,103 @@
-import { useQuery } from "@tanstack/react-query";
-import { codeResponse } from "./code.type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { codeResponse, ComCodeResponse } from "./code.type";
 import { SelectOption } from "@/components/SelectBox";
 import { ApiError } from "../common/types/common.type";
-import { fetchCodeList } from "./code.api";
+import {
+  fetchCodeList,
+  fetchAdminComCodeList,
+  fetchAdminDtlCodeList,
+  createAdminComCode,
+  updateAdminComCode,
+  deleteAdminComCode,
+  createAdminDtlCode,
+  updateAdminDtlCode,
+  deleteAdminDtlCode,
+} from "./code.api";
+import type {
+  ComCodeCreateRequest,
+  ComCodeUpdateRequest,
+  DtlCodeCreateRequest,
+  DtlCodeUpdateRequest,
+} from "./code.type";
 
-/**
- * 공통 코드 목록을 API에서 조회합니다.
- *
- * @param params - 조회할 공통 코드 조건 (comCdId 등)
- * @returns SelectOption[] - { label, value } 형태로 변환된 옵션 배열, React Query 데이터로 사용
- */
+// ── Public 쿼리 ──────────────────────────────────────────
+
 export const useCodeQuery = (comCdIds: string[]) =>
   useQuery<Record<string, codeResponse[]>, ApiError, SelectOption[]>({
-    queryKey: ["codes", comCdIds], // queryKey 가 바뀔 때마다 query 재호출
+    queryKey: ["codes", comCdIds],
     queryFn: () => fetchCodeList(comCdIds),
-    enabled: !!comCdIds, // params가 있을 때만 query 호출
-    // select: (data) => codeToSelectOption(data),
+    enabled: !!comCdIds,
   });
+
+// ── Admin - 공통코드 쿼리 & 뮤테이션 ──────────────────────
+
+export const useAdminComCodeListQuery = (params?: {
+  comCdNm?: string;
+  useYn?: string;
+}) =>
+  useQuery<ComCodeResponse[], ApiError>({
+    queryKey: ["admin", "com-codes", params],
+    queryFn: () => fetchAdminComCodeList(params),
+  });
+
+export const useCreateAdminComCodeMutation = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ComCodeCreateRequest) => createAdminComCode(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "com-codes"] }),
+  });
+};
+
+export const useUpdateAdminComCodeMutation = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ comCdId, body }: { comCdId: string; body: ComCodeUpdateRequest }) =>
+      updateAdminComCode(comCdId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "com-codes"] }),
+  });
+};
+
+export const useDeleteAdminComCodeMutation = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (comCdId: string) => deleteAdminComCode(comCdId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "com-codes"] }),
+  });
+};
+
+// ── Admin - 상세코드 쿼리 & 뮤테이션 ──────────────────────
+
+export const useAdminDtlCodeListQuery = (comCdId?: string) =>
+  useQuery<codeResponse[], ApiError>({
+    queryKey: ["admin", "dtl-codes", comCdId],
+    queryFn: () => fetchAdminDtlCodeList(comCdId!),
+    enabled: !!comCdId,
+  });
+
+export const useCreateAdminDtlCodeMutation = (comCdId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: DtlCodeCreateRequest) => createAdminDtlCode(body),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["admin", "dtl-codes", comCdId] }),
+  });
+};
+
+export const useUpdateAdminDtlCodeMutation = (comCdId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ dtlCdId, body }: { dtlCdId: string; body: DtlCodeUpdateRequest }) =>
+      updateAdminDtlCode(dtlCdId, body),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["admin", "dtl-codes", comCdId] }),
+  });
+};
+
+export const useDeleteAdminDtlCodeMutation = (comCdId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dtlCdId: string) => deleteAdminDtlCode(dtlCdId),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["admin", "dtl-codes", comCdId] }),
+  });
+};

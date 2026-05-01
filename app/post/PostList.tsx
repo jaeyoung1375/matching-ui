@@ -1,7 +1,6 @@
 "use client";
 import { Card } from "@/components/Card";
 import { usePostListQuery } from "@/features/post/post.query";
-import SearchHeader from "./SearchHeader";
 import { SelectOption } from "@/components/SelectBox";
 import { useEffect, useState } from "react";
 import { CommonCode } from "@/features/common/commonCode";

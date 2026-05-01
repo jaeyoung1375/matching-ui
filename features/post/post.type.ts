@@ -1,3 +1,5 @@
+import { StudyCardData } from "@/components/Card";
+
 export type PostDto = {
   /** 게시판아이디 */
   postId?: number;
@@ -48,7 +50,7 @@ export type PostDto = {
   tempKey?: string;
 };
 
-export type PostResponseDto = {
+export type PostResponseDto = StudyCardData & {
   /** 게시판아이디 */
   postId?: number;
 

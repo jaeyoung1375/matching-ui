@@ -1,33 +1,53 @@
-import { get } from "@/util/AxiosUtil";
-import { codeList, CodeRequest, codeResponse } from "./code.type";
+import { get, post, put, deleteData } from "@/util/AxiosUtil";
+import {
+  codeList,
+  CodeRequest,
+  codeResponse,
+  ComCodeResponse,
+  ComCodeCreateRequest,
+  ComCodeUpdateRequest,
+  DtlCodeCreateRequest,
+  DtlCodeUpdateRequest,
+} from "./code.type";
 
-/**
- * 공통 코드 목록 조회
- *
- * @param comCdIds - 조회할 공통 코드 ID 목록
- * @returns codeList  - 공통 코드 ID를 key로 하는 코드 목록 Map
- *
- * @example
- * const codes = await fetchCodeList([
- *   "RECRUIT_TYPE_CD",
- *   "PROGRESS_TYPE_CD"
- * ]);
- *
- * codes.RECRUIT_TYPE_CD
- * codes.PROGRESS_TYPE_CD
- */
-export const fetchCodeList = (comCdIds: string[], param?: CodeRequest) => {
-  const res = get<codeList>("/api/v1/public/codes", {
+// ── Public APIs ──────────────────────────────────────────
+
+export const fetchCodeList = (comCdIds: string[], param?: CodeRequest) =>
+  get<codeList>("/api/v1/public/codes", {
     params: { comCdIds, param },
   });
 
-  return res;
-};
-
-export const fetchCode = async (param?: CodeRequest) => {
-  const res = await get<codeResponse[]>("/api/v1/public/code", {
+export const fetchCode = (param?: CodeRequest) =>
+  get<codeResponse[]>("/api/v1/public/code", {
     params: param,
   });
 
-  return res;
-};
+// ── Admin APIs - 공통코드(상위코드) ──────────────────────
+
+export const fetchAdminComCodeList = (params?: {
+  comCdNm?: string;
+  useYn?: string;
+}) => get<ComCodeResponse[]>("/api/v1/admin/codes", { params });
+
+export const createAdminComCode = (body: ComCodeCreateRequest) =>
+  post<void>("/api/v1/admin/code", body);
+
+export const updateAdminComCode = (comCdId: string, body: ComCodeUpdateRequest) =>
+  put<void>(`/api/v1/admin/code/${comCdId}`, body);
+
+export const deleteAdminComCode = (comCdId: string) =>
+  deleteData<void>(`/api/v1/admin/code/${comCdId}`);
+
+// ── Admin APIs - 상세코드(하위코드) ──────────────────────
+
+export const fetchAdminDtlCodeList = (comCdId: string) =>
+  get<codeResponse[]>(`/api/v1/admin/code/${comCdId}/dtl`);
+
+export const createAdminDtlCode = (body: DtlCodeCreateRequest) =>
+  post<void>("/api/v1/admin/code/dtl", body);
+
+export const updateAdminDtlCode = (dtlCdId: string, body: DtlCodeUpdateRequest) =>
+  put<void>(`/api/v1/admin/code/dtl/${dtlCdId}`, body);
+
+export const deleteAdminDtlCode = (dtlCdId: string) =>
+  deleteData<void>(`/api/v1/admin/code/dtl/${dtlCdId}`);

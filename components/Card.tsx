@@ -9,7 +9,7 @@ export type StudyMode = "online" | "offline" | "hybrid";
 export type StudyStatus = "open" | "closed" | "full";
 
 export interface StudyCardData {
-  id: string;
+  postId: string;
   title: string;
   techStack: string[];
   roles: { label: string; color?: "blue" | "violet" | "green" | "orange" }[];
@@ -40,7 +40,7 @@ function formatNum(n: number) {
 
 export function Card({ data, onBookmark, className }: StudyCardProps) {
   const {
-    id,
+    postId,
     title,
     techStack,
     roles,
@@ -57,7 +57,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
 
   return (
     <Link
-      href={`/studies/${id}`}
+      href={`/studies/${postId}`}
       className={clsx(
         "group flex flex-col bg-white rounded-[16px]",
         "border border-ink-200/70 overflow-hidden",
@@ -90,7 +90,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
           type="button"
           onClick={(e) => {
             e.preventDefault();
-            onBookmark?.(id);
+            onBookmark?.(postId);
           }}
           aria-label="북마크"
           className={clsx(
