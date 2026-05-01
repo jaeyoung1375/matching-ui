@@ -1,5 +1,5 @@
 "use client";
-import Card from "@/components/Card";
+import { Card } from "@/components/Card";
 import { usePostListQuery } from "@/features/post/post.query";
 import SearchHeader from "./SearchHeader";
 import { SelectOption } from "@/components/SelectBox";
@@ -61,10 +61,10 @@ export default function PostList() {
   return (
     <>
       <div className="max-w-6xl mx-auto px-4">
-        <SearchHeader selectOptions={selectOptions} onSearch={handleSearch} />
+        {/* <SearchHeader selectOptions={selectOptions} onSearch={handleSearch} /> */}
         <div className="grid grid-cols-4 gap-4 mt-16">
           {post?.map((item) => {
-            return <Card key={item.postId} list={item} />;
+            return <Card key={item.postId} data={item} />;
           })}
         </div>
       </div>

@@ -1,5 +1,79 @@
 @import "tailwindcss";
 
+@theme {
+  /* colors */
+  --color-teamo: #ff7a00;
+  --color-teamo-hover: #e06e00;
+  --color-teamo-pressed: #c26000;
+  --color-teamo-soft: #fff3e6;
+  --color-teamo-light: #ffecd6;
+  --color-teamo-50: #fff8f0;
+  --color-teamo-100: #ffecd6;
+  --color-teamo-200: #ffd4a8;
+  --color-teamo-300: #ffb870;
+  --color-teamo-400: #ff9b38;
+  --color-teamo-500: #ff7a00;
+  --color-teamo-600: #e06e00;
+  --color-teamo-700: #c26000;
+  --color-teamo-800: #994c00;
+  --color-teamo-900: #3d1f00;
+
+  --color-ink-50: #fafafa;
+  --color-ink-100: #f4f4f5;
+  --color-ink-150: #ececee;
+  --color-ink-200: #dcdce0;
+  --color-ink-300: #c2c4c8;
+  --color-ink-400: #9a9aa0;
+  --color-ink-500: #70737c;
+  --color-ink-600: #55565b;
+  --color-ink-700: #37383c;
+  --color-ink-800: #2e2f33;
+  --color-ink-900: #171719;
+
+  --color-info-soft: #eaf2fe;
+  --color-info-DEFAULT: #0066ff;
+  --color-info-hover: #005eeb;
+  --color-info-50: #f0f5ff;
+  --color-info-100: #eaf2fe;
+  --color-info-300: #94bffd;
+  --color-info-500: #0066ff;
+  --color-info-600: #005eeb;
+  --color-info-700: #0052cc;
+
+  --color-danger-soft: #fff5f5;
+  --color-danger-DEFAULT: #ff4242;
+  --color-danger-500: #ff4242;
+  --color-danger-700: #cc3333;
+
+  --color-success-soft: #f0fff4;
+  --color-success-DEFAULT: #00bf40;
+  --color-success-500: #00bf40;
+
+  --color-accent-soft: #f0fff4;
+  --color-accent-DEFAULT: #00bf40;
+  --color-accent-600: #00bf40;
+
+  /* font */
+  --font-sans: "Pretendard JP Variable", "Pretendard JP", sans-serif;
+
+  /* radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* shadow */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  /* font size */
+  --text-title3: 24px;
+  --text-title3--line-height: 32px;
+
+  --text-body1: 16px;
+  --text-body1--line-height: 24px;
+}
+
 @layer components {
   .btn-primary {
     @apply text-white text-base font-bold px-7 h-[47px] rounded-[27px] bg-[#FFA94D];
