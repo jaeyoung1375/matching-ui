@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Pagination } from "@/components/ui/Pagination";
 
 export default function Home() {
   const router = useRouter();
@@ -197,6 +198,7 @@ export default function Home() {
             </div>
           </aside>
         </div>
+        <Pagination currentPage={1} totalPages={21} onPageChange={() => {}} />
       </main>
     </>
   );

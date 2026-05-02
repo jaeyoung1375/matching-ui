@@ -11,20 +11,16 @@ export type StudyStatus = "open" | "closed" | "full";
 export interface StudyCardData {
   postId: string;
   title: string;
-  techStack: string[];
-  roles: { label: string; color?: "blue" | "violet" | "green" | "orange" }[];
-  author: {
-    name: string;
-    role: string;
-    avatarGradient?: string; // e.g. 'from-teamo-400 to-teamo-300'
-  };
-  mode: StudyMode;
+  techStackCd: string[];
+  recruitPositTypeNm: string[];
+  name: string;
+  progressTypeCd: string;
   status: StudyStatus;
   deadline: string; // 'D-7' | 'D-3' | '마감'
   deadlineUrgent?: boolean;
-  views: number;
+  viewCnt: number;
   comments: number;
-  memberCount: string; // '2/4명'
+  recruitCnt: string; // '2/4명'
   bookmarked?: boolean;
 }
 
@@ -42,16 +38,16 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
   const {
     postId,
     title,
-    techStack,
-    roles,
-    author,
-    mode,
+    techStackCd,
+    recruitPositTypeNm,
+    name,
+    progressTypeCd,
     status,
     deadline,
     deadlineUrgent,
-    views,
+    viewCnt,
     comments,
-    memberCount,
+    recruitCnt,
     bookmarked,
   } = data;
 
@@ -72,18 +68,14 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
           {status === "full" && <Badge variant="closed">모집완료</Badge>}
           <Badge
             variant={
-              mode === "online"
+              progressTypeCd === "online"
                 ? "online"
-                : mode === "offline"
+                : progressTypeCd === "offline"
                   ? "offline"
                   : "new"
             }
           >
-            {mode === "online"
-              ? "온라인"
-              : mode === "offline"
-                ? "오프라인"
-                : "온/오프"}
+            {progressTypeCd}
           </Badge>
         </div>
         <button
@@ -114,14 +106,14 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
           {title}
         </h3>
         <div className="flex flex-wrap gap-1.5">
-          {["React", "TypeScript", "Next.js", "Zustand"].map((t) => (
+          {techStackCd.map((t) => (
             <TechTag key={t}>{t}</TechTag>
           ))}
         </div>
         <div className="flex flex-wrap gap-1">
-          {[{ label: "프론트엔드" }, { label: "백엔드" }].map((r) => (
-            <RoleTag key={r.label} color={"blue"}>
-              {r.label}
+          {recruitPositTypeNm.map((r) => (
+            <RoleTag key={r} color={"blue"}>
+              {r}
             </RoleTag>
           ))}
         </div>
@@ -134,12 +126,9 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
               "from-teamo-400 to-teamo-300",
             )}
           >
-            {/* {author.name[0]} */}
-            {"허"}
+            {name[0]}
           </div>
-          <span className="text-[12px] font-semibold text-ink-600">
-            {"허재영"}
-          </span>
+          <span className="text-[12px] font-semibold text-ink-600">{name}</span>
           <span className="text-[10px] text-ink-200">·</span>
           <span className="text-[11px] text-ink-400">{"프론트엔드"}</span>
         </div>
@@ -163,7 +152,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            {"128"}
+            {viewCnt}
           </span>
           {/* 댓글 */}
           <span className="flex items-center gap-1 text-[12px] text-ink-400 font-medium">
@@ -196,7 +185,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
             </svg>
-            {"4명"}
+            {recruitCnt}
           </span>
         </div>
         {/* 마감일 */}

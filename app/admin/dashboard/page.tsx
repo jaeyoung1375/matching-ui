@@ -1,5 +1,9 @@
 import { Users, FileText, BookOpen, TrendingUp } from "lucide-react";
 
+/**
+ * 대시보드에 표시할 통계 카드 목록.
+ * 현재는 목업 데이터이며, 추후 API 연동으로 대체한다.
+ */
 const stats = [
   {
     label: "총 회원수",
@@ -35,6 +39,7 @@ const stats = [
   },
 ];
 
+/** 관리자 대시보드 페이지 — Teamo 운영 현황을 통계 카드로 표시한다 */
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
@@ -45,6 +50,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* 통계 카드 그리드 — 화면 크기에 따라 1~4열로 반응형 배치 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {stats.map(({ label, value, desc, icon: Icon, color, bg }) => (
           <div
@@ -57,6 +63,7 @@ export default function DashboardPage() {
                 <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
                 <p className="text-xs text-gray-400 mt-1">{desc}</p>
               </div>
+              {/* 카테고리별 색상이 적용된 아이콘 */}
               <div
                 className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}
               >

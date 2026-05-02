@@ -53,6 +53,11 @@
   --color-accent-DEFAULT: #00bf40;
   --color-accent-600: #00bf40;
 
+  /* 관리자 전용 색상 */
+  --color-admin-primary: #2563eb;
+  --color-admin-primary-hover: #1d4ed8;
+  --color-admin-soft: #eff6ff;
+
   /* font */
   --font-sans: "Pretendard JP Variable", "Pretendard JP", sans-serif;
 
