@@ -50,7 +50,7 @@ export type PostDto = {
   tempKey?: string;
 };
 
-export type PostResponseDto = StudyCardData & {
+export type PostResponse = StudyCardData & {
   /** 게시판아이디 */
   postId?: number;
 
@@ -114,4 +114,5 @@ export type PostRequest = {
   techStackTypeCd?: string[]; // 기술스택구분코드
   progressTypeCd?: string; // 진행방식구분코드
   recruitPositTypeCd?: string; // 포지션구분코드
+  pageNum: number;
 };

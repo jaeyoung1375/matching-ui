@@ -1,6 +1,5 @@
 "use client";
 import PostList from "./post/PostList";
-import { fetchCodeList } from "@/features/code/code.api";
 import { Button } from "@/components/ui/Button";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { useState } from "react";
@@ -8,6 +7,9 @@ import { Input } from "@/components/ui/Input";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Pagination } from "@/components/ui/Pagination";
+import { PostRequest } from "@/features/post/post.type";
+import { usePostListQuery } from "@/features/post/post.query";
+import MainSkeleton from "@/components/ui/MainSkeleton";
 
 export default function Home() {
   const router = useRouter();
@@ -31,6 +33,14 @@ export default function Home() {
   const [activeSort, setActiveSort] = useState("최신순");
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set(["1"]));
   const [search, setSearch] = useState("");
+
+  const [req, setReq] = useState<PostRequest>({
+    pageNum: 1,
+  });
+
+  const { data: post, isLoading } = usePostListQuery(req);
+
+  if (isLoading) return <MainSkeleton />;
 
   return (
     <>
@@ -117,7 +127,7 @@ export default function Home() {
               onChange={(e) => setSearch(e.target.value)}
               leftIcon={<SearchIcon size={18} />}
             />
-            <PostList />
+            {post && <PostList data={post?.data} />}
           </div>
 
           <aside className="flex flex-col gap-4">
@@ -198,7 +208,18 @@ export default function Home() {
             </div>
           </aside>
         </div>
-        <Pagination currentPage={1} totalPages={21} onPageChange={() => {}} />
+        {post && (
+          <Pagination
+            currentPage={post?.pageNum}
+            totalPages={post?.pages}
+            onPageChange={(e) => {
+              setReq((prev) => ({
+                ...prev,
+                pageNum: Number(e),
+              }));
+            }}
+          />
+        )}
       </main>
     </>
   );

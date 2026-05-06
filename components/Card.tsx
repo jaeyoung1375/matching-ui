@@ -53,7 +53,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
 
   return (
     <Link
-      href={`/studies/${postId}`}
+      href={`/post/${postId}`}
       className={clsx(
         "group flex flex-col bg-white rounded-[16px]",
         "border border-ink-200/70 overflow-hidden",

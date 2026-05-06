@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { CommonCode } from "@/features/common/commonCode";
 import { fetchCodeList } from "@/features/code/code.api";
 import { codeToSelectOption } from "@/util/CommonUtil";
-import { PostRequest } from "@/features/post/post.type";
+import { PostRequest, PostResponse } from "@/features/post/post.type";
 
 export type SelectOptions = {
   techStack: SelectOption[];
@@ -15,7 +15,7 @@ export type SelectOptions = {
   recruit: SelectOption[];
 };
 
-export default function PostList() {
+export default function PostList({ data }: { data: PostResponse[] }) {
   /**
    * 게시글 목록을 조회하는 React Query 훅을 사용하여 데이터를 가져옵니다.
    */
@@ -49,20 +49,14 @@ export default function PostList() {
     fetchData();
   }, []);
 
-  const [search, setSearch] = useState<PostRequest>();
-
-  const { data: post } = usePostListQuery(search);
-
-  const handleSearch = (formData: PostRequest) => {
-    setSearch(formData);
-  };
+  console.log(data);
 
   return (
     <>
       <div className="max-w-6xl mx-auto px-4">
         {/* <SearchHeader selectOptions={selectOptions} onSearch={handleSearch} /> */}
         <div className="grid grid-cols-4 gap-4 mt-16">
-          {post?.map((item) => {
+          {data?.map((item) => {
             return <Card key={item.postId} data={item} />;
           })}
         </div>

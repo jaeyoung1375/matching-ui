@@ -12,8 +12,10 @@ import {
   createAdminDtlCode,
   updateAdminDtlCode,
   deleteAdminDtlCode,
+  fetchCode,
 } from "./code.api";
 import type {
+  CodeRequest,
   ComCodeCreateRequest,
   ComCodeUpdateRequest,
   DtlCodeCreateRequest,
@@ -22,11 +24,12 @@ import type {
 
 // ── Public 쿼리 ──────────────────────────────────────────
 
-export const useCodeQuery = (comCdIds: string[]) =>
-  useQuery<Record<string, codeResponse[]>, ApiError, SelectOption[]>({
-    queryKey: ["codes", comCdIds],
-    queryFn: () => fetchCodeList(comCdIds),
-    enabled: !!comCdIds,
+export const useCodeQuery = (params: CodeRequest) =>
+  useQuery<codeResponse[], ApiError>({
+    queryKey: ["codes", params],
+    queryFn: () => fetchCode(params),
+    enabled: !!params.comCdId,
+    staleTime: Infinity,
   });
 
 // ── Admin - 공통코드 쿼리 & 뮤테이션 ──────────────────────
@@ -51,8 +54,13 @@ export const useCreateAdminComCodeMutation = () => {
 export const useUpdateAdminComCodeMutation = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ comCdId, body }: { comCdId: string; body: ComCodeUpdateRequest }) =>
-      updateAdminComCode(comCdId, body),
+    mutationFn: ({
+      comCdId,
+      body,
+    }: {
+      comCdId: string;
+      body: ComCodeUpdateRequest;
+    }) => updateAdminComCode(comCdId, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "com-codes"] }),
   });
 };
@@ -86,8 +94,13 @@ export const useCreateAdminDtlCodeMutation = (comCdId: string) => {
 export const useUpdateAdminDtlCodeMutation = (comCdId: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ dtlCdId, body }: { dtlCdId: string; body: DtlCodeUpdateRequest }) =>
-      updateAdminDtlCode(dtlCdId, body),
+    mutationFn: ({
+      dtlCdId,
+      body,
+    }: {
+      dtlCdId: string;
+      body: DtlCodeUpdateRequest;
+    }) => updateAdminDtlCode(dtlCdId, body),
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: ["admin", "dtl-codes", comCdId] }),
   });

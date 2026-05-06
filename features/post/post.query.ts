@@ -1,10 +1,18 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { PostRequest, PostResponseDto } from "./post.type";
-import { fetchPostList } from "./post.api";
+import { PostRequest, PostResponse } from "./post.type";
+import { fetchPost, fetchPostList } from "./post.api";
+import { PageResponse } from "../common/types/common.type";
 
 export const usePostListQuery = (params?: PostRequest) =>
-  useQuery<PostResponseDto[]>({
-    queryKey: ["postList", params], // queryKey 가 바뀔 때마다 query 재호출
+  useQuery<PageResponse<PostResponse>>({
+    queryKey: ["postList", params],
     queryFn: () => fetchPostList(params),
     placeholderData: keepPreviousData,
+  });
+
+export const usePostQuery = (postId: number) =>
+  useQuery<PostResponse>({
+    queryKey: ["post", postId],
+    queryFn: () => fetchPost(postId),
+    enabled: !!postId,
   });

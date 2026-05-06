@@ -4,7 +4,6 @@ import { forwardRef, useState } from "react";
 import {
   format,
   startOfMonth,
-  endOfMonth,
   getDay,
   getDaysInMonth,
   addMonths,
@@ -66,7 +65,7 @@ const TeamoDatePicker = forwardRef<HTMLButtonElement, TeamoDatePickerProps>(
     const handleNextMonth = () => setViewDate((d) => addMonths(d, 1));
 
     // 달력 그리드 구성
-    const firstDay = getDay(startOfMonth(viewDate));  // 첫날 요일 (0=일)
+    const firstDay = getDay(startOfMonth(viewDate)); // 첫날 요일 (0=일)
     const daysInMonth = getDaysInMonth(viewDate);
     const cells: (Date | null)[] = [
       ...Array(firstDay).fill(null),
@@ -92,7 +91,9 @@ const TeamoDatePicker = forwardRef<HTMLButtonElement, TeamoDatePickerProps>(
             className,
           )}
         >
-          <span>{value ? format(value, "yyyy.MM.dd", { locale: ko }) : placeholder}</span>
+          <span>
+            {value ? format(value, "yyyy.MM.dd", { locale: ko }) : placeholder}
+          </span>
           <CalendarIcon className="w-4 h-4 text-ink-400 flex-shrink-0" />
         </Popover.Trigger>
 
@@ -133,7 +134,11 @@ const TeamoDatePicker = forwardRef<HTMLButtonElement, TeamoDatePickerProps>(
                   key={d}
                   className={cn(
                     "text-center text-[11px] font-semibold py-1",
-                    i === 0 ? "text-danger" : i === 6 ? "text-info" : "text-ink-400",
+                    i === 0
+                      ? "text-danger"
+                      : i === 6
+                        ? "text-info"
+                        : "text-ink-400",
                   )}
                 >
                   {d}
@@ -162,10 +167,19 @@ const TeamoDatePicker = forwardRef<HTMLButtonElement, TeamoDatePickerProps>(
                       "relative w-full aspect-square flex items-center justify-center",
                       "text-[13px] rounded-full transition-colors duration-100",
                       isPast && "text-ink-300 cursor-not-allowed",
-                      !isPast && !isSelected && dayOfWeek === 0 && "text-danger",
+                      !isPast &&
+                        !isSelected &&
+                        dayOfWeek === 0 &&
+                        "text-danger",
                       !isPast && !isSelected && dayOfWeek === 6 && "text-info",
-                      !isPast && !isSelected && dayOfWeek !== 0 && dayOfWeek !== 6 && "text-ink-900",
-                      !isPast && !isSelected && "hover:bg-teamo-soft hover:text-teamo",
+                      !isPast &&
+                        !isSelected &&
+                        dayOfWeek !== 0 &&
+                        dayOfWeek !== 6 &&
+                        "text-ink-900",
+                      !isPast &&
+                        !isSelected &&
+                        "hover:bg-teamo-soft hover:text-teamo",
                       isSelected && "bg-teamo text-white font-bold",
                     )}
                   >
