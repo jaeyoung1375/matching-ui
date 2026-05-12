@@ -33,7 +33,7 @@ export default function LoginForm() {
     if (token) {
       router.replace("/");
     }
-  }, []);
+  }, [router]);
 
   const onSubmit = async (data: LoginRequest) => {
     if (isLoading) return;

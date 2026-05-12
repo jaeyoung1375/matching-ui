@@ -28,7 +28,10 @@ api.interceptors.response.use(
 
     if (status === 401 && !url?.includes("/auth/login")) {
       localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       window.location.href = "/";
+      // 페이지 이동 후 컴포넌트 catch 블록이 실행되지 않도록 프로미스 체인 중단
+      return new Promise(() => {});
     }
 
     return Promise.reject(err);

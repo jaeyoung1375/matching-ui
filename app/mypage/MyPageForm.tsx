@@ -59,7 +59,7 @@ export default function MyPageForm() {
     if (!token) {
       router.replace("/login");
     }
-  }, []);
+  }, [router]);
 
   // 언어 목록 로딩
   useEffect(() => {
@@ -96,21 +96,28 @@ export default function MyPageForm() {
       }
     }
 
-    if (profileImage) {
-      await uploadProfileImage(profileImage);
+    try {
+      if (profileImage) {
+        await uploadProfileImage(profileImage);
+      }
+
+      await updateUser({
+        name,
+        password: password || undefined,
+        dtlCdIds: languages,
+      });
+
+      const updatedUser = await getMe();
+      setUser(updatedUser);
+
+      // reset() 호출 제거: 같은 페이지로 replace 시 useEffect([user])가
+      // 이미 최신 값으로 폼을 채워주므로 빈 화면이 되는 문제 방지
+      router.replace("/mypage");
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message || "정보 수정 중 오류가 발생했습니다.";
+      setAlert(message);
     }
-
-    await updateUser({
-      name,
-      password: password || undefined,
-      dtlCdIds: languages,
-    });
-
-    const updatedUser = await getMe();
-    setUser(updatedUser);
-
-    router.replace("/mypage");
-    reset();
   };
 
   // 변경 여부 체크 (watch 활용)
@@ -182,6 +189,7 @@ export default function MyPageForm() {
 
             <div className="flex gap-2">
               <button
+                type="button"
                 className="flex-1 bg-gray-300 rounded h-10"
                 onClick={() => {
                   setShowWithdrawModal(false);
@@ -211,19 +219,21 @@ export default function MyPageForm() {
                       await withdrawUser();
                     }
 
-                    localStorage.removeItem("accessToken");
-                    logout();
-                    router.replace("/");
+                    // logout()을 먼저 호출해야 logoutApi()가 정상 실행됨
+                    // (accessToken이 있어야 블랙리스트 등록 가능)
+                    // clearAuth() 내부에서 localStorage 정리 + router.push("/") 처리
+                    await logout();
                   } catch (error: any) {
                     const code = error?.response?.data?.code;
+                    // U0010: SOCIAL_TOKEN_EXPIRED — 소셜 토큰 만료로 탈퇴 불가
                     if (code === "U0010") {
-                      setAlert("다시 로그인 후 탈퇴해주세요.", () => {
-                        logout();
-                        localStorage.removeItem("accessToken");
+                      setAlert("소셜 토큰이 만료되었습니다. 다시 로그인 후 탈퇴해주세요.", async () => {
+                        await logout(); // clearAuth()가 localStorage 정리 + 홈 이동
                         router.replace("/login");
                       });
                     } else {
-                      setAlert("비밀번호가 일치하지 않습니다.");
+                      const message = error?.response?.data?.message || "비밀번호가 일치하지 않습니다.";
+                      setAlert(message);
                     }
                   }
                 }}
@@ -298,7 +308,6 @@ export default function MyPageForm() {
       >
         회원 탈퇴
       </Button>
-      <></>
     </form>
   );
 }

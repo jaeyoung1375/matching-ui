@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signup, checkEmail, getLanguages } from "@/features/auth/auth.query";
+import { signup, checkEmail, getLanguages, getMe } from "@/features/auth/auth.query";
 import Button from "@/components/Button";
 import MultiSelect, { MultiSelectOption } from "@/components/MultiSelectBox";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useAlertStore } from "@/store/alertStore";
 import { SignupFormValues } from "@/features/auth/auth.type";
-import { getMe } from "@/features/auth/auth.query";
 import { useAuth } from "../context/AuthContext";
 
 export default function SignupForm() {
@@ -94,10 +93,14 @@ export default function SignupForm() {
 
       const res = await signup({
         ...data,
+        phone: data.phone.replace(/-/g, ""), // 백엔드 패턴(숫자만)에 맞게 하이픈 제거
         dtlCdIds: languages,
       });
 
       localStorage.setItem("accessToken", res.accessToken);
+      if (res.refreshToken) {
+        localStorage.setItem("refreshToken", res.refreshToken);
+      }
 
       const me = await getMe();
       setUser(me);
@@ -153,11 +156,11 @@ export default function SignupForm() {
               placeholder="example@email.com"
               {...register("email", {
                 required: "이메일을 입력해주세요.",
+                onChange: () => {
+                  setEmailChecked(false);
+                  setEmailAvailable(null);
+                },
               })}
-              onChange={() => {
-                setEmailChecked(false);
-                setEmailAvailable(null);
-              }}
               className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
             />
 
@@ -229,6 +232,10 @@ export default function SignupForm() {
             placeholder="010-0000-0000"
             {...register("phone", {
               required: "핸드폰번호를 입력해주세요.",
+              pattern: {
+                value: /^01[016789]-\d{3,4}-\d{4}$/,
+                message: "올바른 전화번호 형식을 입력해주세요. (예: 010-1234-5678)",
+              },
             })}
             className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900"
           />

@@ -8,9 +8,13 @@ export default function TokenHandler() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    const refreshToken = params.get("refreshToken");
 
     if (token) {
       localStorage.setItem("accessToken", token);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
       window.history.replaceState({}, "", "/");
     }
   }, []);
