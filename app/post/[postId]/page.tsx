@@ -1,12 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { TechTag } from "@/components/ui/FilterChip";
 import { ChevronLeft, Clock, Users, Calendar } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
+import CommentSection from "./components/CommentSection";
 
 const MOCK = {
   title: "React + TypeScript 실전 프로젝트 스터디",
@@ -52,6 +53,8 @@ const MOCK = {
 
 export default function StudyDetailPage() {
   const router = useRouter();
+  const params = useParams();
+  const postId = Number(params.postId);
   const [bookmarked, setBookmarked] = useState(false);
 
   return (
@@ -155,6 +158,9 @@ export default function StudyDetailPage() {
                 ))}
               </div>
             </div>
+
+            {/* 댓글 */}
+            <CommentSection postId={postId} />
           </div>
 
           {/* ── 우측 지원 카드 ── */}

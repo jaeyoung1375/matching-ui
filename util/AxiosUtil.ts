@@ -27,11 +27,17 @@ api.interceptors.response.use(
     const url = err.config?.url;
 
     if (status === 401 && !url?.includes("/auth/login")) {
+      const hadToken = !!localStorage.getItem("accessToken");
+
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      window.location.href = "/";
-      // 페이지 이동 후 컴포넌트 catch 블록이 실행되지 않도록 프로미스 체인 중단
-      return new Promise(() => {});
+
+      // 토큰이 있었던 경우(세션 만료)만 홈으로 리다이렉트
+      // 비로그인 상태에서 인증 필요 API를 호출한 경우는 그냥 에러로 흘려보냄
+      if (hadToken) {
+        window.location.href = "/";
+        return new Promise(() => {});
+      }
     }
 
     return Promise.reject(err);
