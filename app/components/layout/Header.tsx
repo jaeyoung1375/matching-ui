@@ -88,6 +88,16 @@ export default function Header() {
                       </button>
                     }
                   >
+                    {/* ADMIN 역할일 때만 어드민 버튼 표시 */}
+                    {user.role === "ADMIN" && (
+                      <Link
+                        href="/admin/dashboard"
+                        className="block px-4 py-2 text-sm text-sm hover:bg-neutral-100"
+                      >
+                        어드민 페이지
+                      </Link>
+                    )}
+
                     <Link
                       href="/mypage"
                       className="block px-4 py-2 text-sm hover:bg-neutral-100"

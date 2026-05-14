@@ -1,50 +1,65 @@
-import { Users, FileText, BookOpen, TrendingUp } from "lucide-react";
+"use client";
 
-/**
- * 대시보드에 표시할 통계 카드 목록.
- * 현재는 목업 데이터이며, 추후 API 연동으로 대체한다.
- */
-const stats = [
-  {
-    label: "총 회원수",
-    value: "1,284",
-    desc: "전체 가입 회원",
-    icon: Users,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-  },
-  {
-    label: "게시글 수",
-    value: "3,412",
-    desc: "등록된 게시글",
-    icon: FileText,
-    color: "text-green-600",
-    bg: "bg-green-50",
-  },
-  {
-    label: "스터디 그룹",
-    value: "142",
-    desc: "활성 스터디 그룹",
-    icon: BookOpen,
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-  },
-  {
-    label: "이번달 신규 회원",
-    value: "98",
-    desc: "이번달 가입자",
-    icon: TrendingUp,
-    color: "text-orange-500",
-    bg: "bg-orange-50",
-  },
-];
+import { useEffect, useState } from "react";
+import { Users, FileText, BookOpen, TrendingUp } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
+import { fetchUserCounts } from "@/features/admin/admin.query";
+import { UserCountsResponse } from "@/features/admin/admin.type";
 
 /** 관리자 대시보드 페이지 — Teamo 운영 현황을 통계 카드로 표시한다 */
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const [counts, setCounts] = useState<UserCountsResponse | null>(null);
+
+  useEffect(() => {
+    fetchUserCounts()
+      .then(setCounts)
+      .catch(() => {});
+  }, []);
+
+  const stats = [
+    {
+      label: "총 회원수",
+      value: counts ? counts.totalCount.toLocaleString() : "-",
+      desc: counts
+        ? `활성 ${counts.activeCount.toLocaleString()}명 · 탈퇴 ${counts.deactivatedCount.toLocaleString()}명`
+        : "전체 가입 회원",
+      icon: Users,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+    },
+    {
+      label: "게시글 수",
+      value: "3,412",
+      desc: "등록된 게시글",
+      icon: FileText,
+      color: "text-green-600",
+      bg: "bg-green-50",
+    },
+    {
+      label: "스터디 그룹",
+      value: "142",
+      desc: "활성 스터디 그룹",
+      icon: BookOpen,
+      color: "text-purple-600",
+      bg: "bg-purple-50",
+    },
+    {
+      label: "이번달 신규 회원",
+      value: "98",
+      desc: "이번달 가입자",
+      icon: TrendingUp,
+      color: "text-orange-500",
+      bg: "bg-orange-50",
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-800">안녕하세요, 관리자님</h2>
+        <h2 className="text-2xl font-bold text-gray-800">
+          안녕하세요, {user?.name ?? "관리자"} (관리자)님
+        </h2>
         <p className="text-sm text-gray-500 mt-1">
           Teamo 스터디 커뮤니티 운영 현황입니다.
         </p>

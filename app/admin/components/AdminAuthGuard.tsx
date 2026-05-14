@@ -17,17 +17,17 @@ export default function AdminAuthGuard({
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // 로딩이 완료된 후 비로그인 상태이면 홈으로 이동
+  // 로딩 완료 후 비로그인이거나 ADMIN이 아니면 홈으로 이동
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && (!user || user.role !== "ADMIN")) {
       router.replace("/");
     }
   }, [loading, user, router]);
 
   // 인증 확인 중에는 빈 화면 유지
   if (loading) return null;
-  // 비로그인 상태이면 리다이렉트 처리 중이므로 빈 화면 유지
-  if (!user) return null;
+  // 비로그인 또는 권한 없는 경우 리다이렉트 처리 중이므로 빈 화면 유지
+  if (!user || user.role !== "ADMIN") return null;
 
   return <>{children}</>;
 }
