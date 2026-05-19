@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Code2 } from "lucide-react";
+import { LayoutDashboard, Code2, Users } from "lucide-react";
 import { cn } from "@/util/cn";
 
 /** 사이드바 네비게이션 항목 목록 */
 const navItems = [
   { href: "/admin/dashboard", label: "대시보드", icon: LayoutDashboard },
+  { href: "/admin/users", label: "회원 관리", icon: Users },
   { href: "/admin/code", label: "코드 관리", icon: Code2 },
 ];
 

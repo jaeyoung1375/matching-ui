@@ -3,18 +3,28 @@
 import { useEffect, useState } from "react";
 import { Users, FileText, BookOpen, TrendingUp } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
-import { fetchUserCounts } from "@/features/admin/admin.query";
-import { UserCountsResponse } from "@/features/admin/admin.type";
+import {
+  fetchUserCounts,
+  fetchNewUserCount,
+  fetchPostCount,
+} from "@/features/admin/admin.query";
+import {
+  UserCountsResponse,
+  NewUserCountResponse,
+  PostCountResponse,
+} from "@/features/admin/admin.type";
 
 /** 관리자 대시보드 페이지 — Teamo 운영 현황을 통계 카드로 표시한다 */
 export default function DashboardPage() {
   const { user } = useAuth();
   const [counts, setCounts] = useState<UserCountsResponse | null>(null);
+  const [newUserCount, setNewUserCount] = useState<NewUserCountResponse | null>(null);
+  const [postCount, setPostCount] = useState<PostCountResponse | null>(null);
 
   useEffect(() => {
-    fetchUserCounts()
-      .then(setCounts)
-      .catch(() => {});
+    fetchUserCounts().then(setCounts).catch(() => {});
+    fetchNewUserCount().then(setNewUserCount).catch(() => {});
+    fetchPostCount().then(setPostCount).catch(() => {});
   }, []);
 
   const stats = [
@@ -30,7 +40,7 @@ export default function DashboardPage() {
     },
     {
       label: "게시글 수",
-      value: "3,412",
+      value: postCount ? postCount.postCount.toLocaleString() : "-",
       desc: "등록된 게시글",
       icon: FileText,
       color: "text-green-600",
@@ -46,7 +56,7 @@ export default function DashboardPage() {
     },
     {
       label: "이번달 신규 회원",
-      value: "98",
+      value: newUserCount ? newUserCount.newUserCount.toLocaleString() : "-",
       desc: "이번달 가입자",
       icon: TrendingUp,
       color: "text-orange-500",

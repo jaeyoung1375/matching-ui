@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 /** 경로(pathname)와 표시할 페이지 제목의 매핑 */
 const pageTitleMap: Record<string, string> = {
   "/admin/dashboard": "대시보드",
+  "/admin/users": "회원 관리",
   "/admin/code": "코드 관리",
 };
 
