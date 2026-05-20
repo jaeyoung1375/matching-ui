@@ -11,7 +11,11 @@ import {
   Clock,
   User,
 } from "lucide-react";
-import { fetchAdminUsers } from "@/features/admin/admin.query";
+import {
+  fetchAdminUsers,
+  updateUserRole,
+  forceLogout,
+} from "@/features/admin/admin.query";
 import { AdminUser } from "@/features/admin/admin.type";
 
 // ── 상태 / 권한 뱃지 ────────────────────────────────────────
@@ -52,13 +56,11 @@ function resolveImageUrl(filePath?: string) {
 function UserDetailModal({
   user,
   onClose,
-  onStatusChange,
   onRoleChange,
   onForceLogout,
 }: {
   user: AdminUser;
   onClose: () => void;
-  onStatusChange: (userId: string, status: string) => void;
   onRoleChange: (userId: string, role: string) => void;
   onForceLogout: (userId: string) => void;
 }) {
@@ -128,70 +130,47 @@ function UserDetailModal({
             </span>
           </div>
 
-          {/* 상태 변경 */}
-          <div>
-            <p className="text-sm font-semibold text-gray-700 mb-2">
-              상태 변경
-            </p>
-            <div className="flex gap-2">
-              {(["ACTIVE", "DEACTIVATE"] as const).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => onStatusChange(user.userId, s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                    user.status === s
-                      ? `${STATUS_STYLE[s]} border-transparent`
-                      : "border-gray-200 text-gray-500 hover:bg-gray-50"
-                  }`}
-                >
-                  {STATUS_LABEL[s]}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* 권한 변경 */}
           <div>
-            <p className="text-sm font-semibold text-gray-700 mb-2">
-              권한 변경
-            </p>
-            <div className="flex gap-2">
-              {(["USER", "ADMIN"] as const).map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => onRoleChange(user.userId, r)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                    user.role === r
-                      ? `${ROLE_STYLE[r]} border-transparent`
-                      : "border-gray-200 text-gray-500 hover:bg-gray-50"
-                  }`}
-                >
-                  {r === "ADMIN" ? (
-                    <ShieldCheck size={13} />
-                  ) : (
-                    <ShieldOff size={13} />
-                  )}
-                  {r}
-                </button>
-              ))}
-            </div>
+            <p className="text-sm font-semibold text-gray-700 mb-2">권한 변경</p>
+            {user.status === "DEACTIVATE" ? (
+              <p className="text-xs text-gray-400">탈퇴한 회원은 권한을 변경할 수 없습니다.</p>
+            ) : (
+              <div className="flex gap-2">
+                {(["USER", "ADMIN"] as const).map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => onRoleChange(user.userId, r)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                      user.role === r
+                        ? `${ROLE_STYLE[r]} border-transparent`
+                        : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                    }`}
+                  >
+                    {r === "ADMIN" ? <ShieldCheck size={13} /> : <ShieldOff size={13} />}
+                    {r}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* JWT 강제 만료 */}
           <div>
-            <p className="text-sm font-semibold text-gray-700 mb-2">
-              JWT 강제 만료
-            </p>
-            <button
-              type="button"
-              onClick={() => onForceLogout(user.userId)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors"
-            >
-              <LogOut size={14} />
-              강제 로그아웃
-            </button>
+            <p className="text-sm font-semibold text-gray-700 mb-2">JWT 강제 만료</p>
+            {user.status === "DEACTIVATE" ? (
+              <p className="text-xs text-gray-400">탈퇴한 회원은 강제 로그아웃할 수 없습니다.</p>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onForceLogout(user.userId)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors"
+              >
+                <LogOut size={14} />
+                강제 로그아웃
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -238,26 +217,45 @@ export default function AdminUsersPage() {
     (u) => statusFilter === "ALL" || u.status === statusFilter,
   );
 
-  const handleStatusChange = (userId: string, status: string) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.userId === userId ? { ...u, status } : u)),
-    );
-    setSelectedUser((prev) =>
-      prev?.userId === userId ? { ...prev, status } : prev,
-    );
+  const handleRoleChange = async (userId: string, role: string) => {
+    const target = users.find((u) => u.userId === userId);
+    if (!target) {
+      alert("존재하지 않는 회원입니다.");
+      return;
+    }
+    if (target.status === "DEACTIVATE") {
+      alert("탈퇴한 회원은 권한을 변경할 수 없습니다.");
+      return;
+    }
+    try {
+      await updateUserRole(userId, role);
+      setUsers((prev) =>
+        prev.map((u) => (u.userId === userId ? { ...u, role } : u)),
+      );
+      setSelectedUser((prev) =>
+        prev?.userId === userId ? { ...prev, role } : prev,
+      );
+    } catch {
+      alert("권한 변경에 실패했습니다.");
+    }
   };
 
-  const handleRoleChange = (userId: string, role: string) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.userId === userId ? { ...u, role } : u)),
-    );
-    setSelectedUser((prev) =>
-      prev?.userId === userId ? { ...prev, role } : prev,
-    );
-  };
-
-  const handleForceLogout = (userId: string) => {
-    alert(`ID ${userId} 사용자의 JWT를 강제 만료했습니다.`);
+  const handleForceLogout = async (userId: string) => {
+    const target = users.find((u) => u.userId === userId);
+    if (!target) {
+      alert("존재하지 않는 회원입니다.");
+      return;
+    }
+    if (target.status === "DEACTIVATE") {
+      alert("탈퇴한 회원은 강제 로그아웃할 수 없습니다.");
+      return;
+    }
+    try {
+      await forceLogout(userId);
+      alert("강제 로그아웃 처리되었습니다.");
+    } catch {
+      alert("강제 로그아웃에 실패했습니다.");
+    }
   };
 
   return (
@@ -445,7 +443,6 @@ export default function AdminUsersPage() {
         <UserDetailModal
           user={selectedUser}
           onClose={() => setSelectedUser(null)}
-          onStatusChange={handleStatusChange}
           onRoleChange={handleRoleChange}
           onForceLogout={handleForceLogout}
         />

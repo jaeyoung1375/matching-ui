@@ -101,6 +101,19 @@ export const deleteData = async <T>(
   return { code, data };
 };
 
+// PATCH 요청
+export const patch = async <T>(
+  url: string,
+  body?: unknown,
+  config?: AxiosRequestConfig,
+) => {
+  const res = await api.patch<ApiResponse<T>>(url, body, config);
+
+  const { code, message, data } = res.data;
+
+  return { code, message, data };
+};
+
 // PUT 요청
 export const put = async <T>(
   url: string,
