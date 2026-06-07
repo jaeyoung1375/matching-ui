@@ -1,121 +1,144 @@
 "use client";
+import * as Popover from "@radix-ui/react-popover";
+import { forwardRef, useState } from "react";
+import { Check, ChevronDown, X } from "lucide-react";
+import { cn } from "@/util/cn";
+import { SelectOption } from "@/components/SelectBox";
 
-import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
-import clsx from "clsx";
+type SelectSize = "sm" | "md" | "lg";
 
-export interface MultiSelectOption {
-  value: string;
-  label: string;
-}
+const triggerSizeMap: Record<SelectSize, string> = {
+  sm: "min-h-8 text-xs",
+  md: "min-h-10 text-sm",
+  lg: "min-h-12 text-base",
+};
 
-interface MultiSelectProps {
-  options: MultiSelectOption[];
+interface MultiSelectBoxProps {
+  options: SelectOption[];
   value?: string[];
   onChange?: (value: string[]) => void;
+  onBlur?: () => void;
   placeholder?: string;
+  size?: SelectSize;
+  disabled?: boolean;
+  error?: boolean;
   className?: string;
 }
 
-export default function MultiSelect({
-  options,
-  value = [],
-  onChange,
-  placeholder = "선택",
-  className,
-}: MultiSelectProps) {
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+const MultiSelectBox = forwardRef<HTMLButtonElement, MultiSelectBoxProps>(
+  (
+    {
+      options,
+      value = [],
+      onChange,
+      onBlur,
+      placeholder = "선택",
+      size = "md",
+      disabled,
+      error,
+      className,
+    },
+    ref,
+  ) => {
+    const [open, setOpen] = useState(false);
 
-  // 바깥 클릭시 닫기
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
+    const toggle = (optValue: string) => {
+      const next = value.includes(optValue)
+        ? value.filter((v) => v !== optValue)
+        : [...value, optValue];
+      onChange?.(next);
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+    const remove = (optValue: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      onChange?.(value.filter((v) => v !== optValue));
     };
-  }, []);
 
-  const toggleOption = (v: string) => {
-    let newValue;
+    const selectedLabels = options.filter((o) => value.includes(o.value));
 
-    if (value.includes(v)) {
-      newValue = value.filter((item) => item !== v);
-    } else {
-      newValue = [...value, v];
-    }
+    return (
+      <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Trigger
+          ref={ref}
+          onBlur={onBlur}
+          disabled={disabled}
+          className={cn(
+            "flex items-center justify-between w-full px-3 py-2 gap-2 bg-white",
+            "border rounded-[10px] transition-colors duration-150 text-left",
+            "focus:outline-none focus:ring-2 focus:ring-teamo/20 focus:border-teamo",
+            "disabled:bg-ink-50 disabled:cursor-not-allowed disabled:text-ink-400",
+            error ? "border-danger" : "border-ink-200",
+            triggerSizeMap[size],
+            className,
+          )}
+        >
+          <div className="flex flex-wrap gap-1.5 flex-1">
+            {selectedLabels.length === 0 ? (
+              <span className="text-ink-400">{placeholder}</span>
+            ) : (
+              selectedLabels.map((opt) => (
+                <span
+                  key={opt.value}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] bg-teamo-soft text-teamo text-[12px] font-semibold"
+                >
+                  {opt.label}
+                  <button
+                    type="button"
+                    onClick={(e) => remove(opt.value, e)}
+                    className="hover:text-teamo/60 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))
+            )}
+          </div>
+          <ChevronDown
+            className={cn(
+              "w-4 h-4 text-ink-400 flex-shrink-0 transition-transform duration-150",
+              open && "rotate-180",
+            )}
+          />
+        </Popover.Trigger>
 
-    onChange?.(newValue);
-  };
+        <Popover.Portal>
+          <Popover.Content
+            sideOffset={4}
+            align="start"
+            className={cn(
+              "z-50 w-[var(--radix-popover-trigger-width)] max-h-60 overflow-y-auto",
+              "bg-white border border-ink-200 rounded-[10px]",
+              "shadow-md p-1",
+              "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+              "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+            )}
+          >
+            {options.map((opt) => {
+              const selected = value.includes(opt.value);
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => toggle(opt.value)}
+                  className={cn(
+                    "flex items-center justify-between w-full px-3 py-2 rounded-[8px]",
+                    "text-sm cursor-pointer select-none transition-colors duration-100",
+                    selected
+                      ? "bg-teamo-soft text-teamo font-semibold"
+                      : "text-ink-900 hover:bg-teamo-soft hover:text-teamo",
+                  )}
+                >
+                  <span>{opt.label}</span>
+                  {selected && <Check className="w-3.5 h-3.5 text-teamo" />}
+                </button>
+              );
+            })}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+    );
+  },
+);
 
-  const removeTag = (v: string) => {
-    onChange?.(value.filter((item) => item !== v));
-  };
-
-  return (
-    <div ref={wrapperRef} className={clsx("relative w-full", className)}>
-      {/* 선택영역 */}
-      <div
-        className="flex flex-wrap gap-2 border rounded-lg px-3 py-2 min-h-[40px] max-h-[80px] overflow-y-auto"
-        onClick={() => setOpen(!open)}
-      >
-        {value.length === 0 && (
-          <span className="text-gray-400 text-sm">{placeholder}</span>
-        )}
-
-        {value.map((v) => {
-          const option = options.find((o) => o.value === v);
-
-          return (
-            <span
-              key={v}
-              className="flex items-center gap-1 bg-gray-100 text-sm px-2 py-1 rounded"
-            >
-              {option?.label}
-
-              <X
-                size={14}
-                className="cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTag(v);
-                }}
-              />
-            </span>
-          );
-        })}
-      </div>
-
-      {/* dropdown */}
-      {open && (
-        <div className="absolute z-50 mt-1 w-full border rounded-md bg-white shadow max-h-60 overflow-auto">
-          {options.map((opt) => {
-            const selected = value.includes(opt.value);
-
-            return (
-              <div
-                key={opt.value}
-                className={clsx(
-                  "px-3 py-2 text-sm cursor-pointer hover:bg-gray-100",
-                  selected && "bg-gray-50 font-medium",
-                )}
-                onClick={() => toggleOption(opt.value)}
-              >
-                {opt.label}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
+MultiSelectBox.displayName = "MultiSelectBox";
+export default MultiSelectBox;

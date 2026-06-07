@@ -1,5 +1,5 @@
-import { get } from "@/util/AxiosUtil";
-import { PostRequest, PostResponse } from "./post.type";
+import { get, post } from "@/util/AxiosUtil";
+import { PostRequest, PostRegisterRequest, PostResponse } from "./post.type";
 import { PageResponse } from "../common/types/common.type";
 
 export const fetchPostList = (params?: PostRequest) => {
@@ -12,3 +12,6 @@ export const fetchPostList = (params?: PostRequest) => {
 
 export const fetchPost = (postId: number) =>
   get<PostResponse>(`/api/v1/public/posts/${postId}`);
+
+export const registerPost = (body: PostRegisterRequest) =>
+  post<PostResponse>("/api/v1/posts", body);

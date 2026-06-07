@@ -38,7 +38,7 @@ export type PostDto = {
   techStackTypeCd?: string[];
 
   /** 모집마감일 */
-  recruitEndDate?: string | Date;
+  recruitEndDate?: string;
 
   /** 모집포지션구분코드 */
   recruitPositTypeCd?: string;
@@ -76,7 +76,7 @@ export type PostResponse = StudyCardData & {
   recruitTypeNm?: string;
 
   /** 모집인원 */
-  recruitCnt?: number;
+  recruitCnt: number;
 
   /** 진행방식구분코드 */
   progressTypeCd?: string;
@@ -115,4 +115,16 @@ export type PostRequest = {
   progressTypeCd?: string; // 진행방식구분코드
   recruitPositTypeCd?: string; // 포지션구분코드
   pageNum?: number;
+};
+
+export type PostRegisterRequest = {
+  title: string; // 제목
+  progressTypeCd: string; // 진행방식
+  recruitCnt: string; // 모집인원
+  progressPeriod: string; // 진행기간
+  recruitEndDate: string; // 모집마감일
+  techStackTypeCd: string[]; // 기술스택
+  recruitPositTypeCd: string[]; // 모집역할
+  content: string; // 스터디소개
+  recruitTarget: string; // 모집대상
 };
