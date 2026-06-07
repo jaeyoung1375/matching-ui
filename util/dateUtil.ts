@@ -31,3 +31,32 @@ export function parseYYYYMMDD(yyyyMMdd: string): Date {
   const dd = yyyyMMdd.slice(6, 8);
   return new Date(`${yyyy}-${MM}-${dd}`);
 }
+
+/**
+ * `yyyyMMdd` 형식의 문자열을 한국어 날짜로 변환합니다.
+ *
+ * @example
+ * formatDateToKorean('20260626')  // "6월 26일"
+ */
+export function formatDateToKorean(yyyyMMdd: string): string {
+  const month = parseInt(yyyyMMdd.slice(4, 6), 10);
+  const day = parseInt(yyyyMMdd.slice(6, 8), 10);
+  return `${month}월 ${day}일`;
+}
+
+/**
+ * 오늘 기준 D-day 계산 (양수면 남은 날, 음수면 지난 날)
+ *
+ * @example
+ * calcDday('20260626')  // "D-3" | "D-Day" | "D+5"
+ */
+export function calcDday(yyyyMMdd: string): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = parseYYYYMMDD(yyyyMMdd);
+  const diff = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (diff === 0) return "D-Day";
+  if (diff > 0) return `D-${diff}`;
+  return `D+${Math.abs(diff)}`;
+}

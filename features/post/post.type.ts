@@ -94,7 +94,7 @@ export type PostResponse = StudyCardData & {
   techStack?: string;
 
   /** 모집마감일 */
-  recruitEndDate?: string;
+  recruitEndDate: string;
 
   /** 모집포지션구분코드 */
   recruitPositTypeCd?: string;
@@ -107,6 +107,9 @@ export type PostResponse = StudyCardData & {
 
   /** 연락방법구분코드명 */
   contactMethodNm?: string;
+
+  /** 모집대상 */
+  recruitTarget: string;
 };
 
 export type PostRequest = {

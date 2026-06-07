@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import clsx from "clsx";
 import { useCodeQuery } from "@/features/code/code.query";
 import SelectBox from "@/components/SelectBox";
 import TeamoDatePicker from "@/components/TeamoDatePicker";
 import { Controller, useForm } from "react-hook-form";
 import { PostRegisterRequest } from "@/features/post/post.type";
-import { formatDateToYYYYMMDD, parseYYYYMMDD } from "@/util/dateUtil";
+import { formatDateToYYYYMMDD, parseYYYYMMDD } from "@/util/DateUtil";
 import MultiSelect from "@/components/MultiSelectBox";
 import { useRegisterPostMutation } from "@/features/post/post.mutation";
 
@@ -69,9 +67,8 @@ export default function PostRegister() {
 
   /** 기술스택코드 조회 */
   const { data: TECH_STACKS } = useCodeQuery({ comCdId: "TECH_STACK" });
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
-  const { mutate: registerPost, isPending } = useRegisterPostMutation();
+  const { mutate: registerPost } = useRegisterPostMutation();
 
   const { control, register, handleSubmit } = useForm<PostRegisterRequest>({
     defaultValues: {
@@ -81,12 +78,6 @@ export default function PostRegister() {
       progressPeriod: "1",
     },
   });
-
-  const toggleRole = (role: string) => {
-    setSelectedRoles((prev) =>
-      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role],
-    );
-  };
 
   /**
    * 글쓰기 버튼
