@@ -110,6 +110,8 @@ export type PostResponse = StudyCardData & {
 
   /** 모집대상 */
   recruitTarget: string;
+
+  positions: RecruitPosition[];
 };
 
 export type PostRequest = {
@@ -120,14 +122,27 @@ export type PostRequest = {
   pageNum?: number;
 };
 
+// 조회용 (상세 페이지)
+export type RecruitPosition = {
+  recruitPositTypeCd: string; // 포지션 코드
+  recruitPositTypeNm?: string; // 포지션명
+  recruitCnt: number; // 모집인원
+  currentCnt?: number; // 현재인원
+};
+
+// 등록용 (게시글 작성)
+export type RecruitPositionInput = {
+  recruitPositTypeCd: string; // 포지션 코드
+  recruitCnt: number; // 모집인원
+};
+
 export type PostRegisterRequest = {
   title: string; // 제목
   progressTypeCd: string; // 진행방식
-  recruitCnt: string; // 모집인원
   progressPeriod: string; // 진행기간
   recruitEndDate: string; // 모집마감일
   techStackTypeCd: string[]; // 기술스택
-  recruitPositTypeCd: string[]; // 모집역할
+  recruitPositions: RecruitPositionInput[]; // 포지션별 모집인원
   content: string; // 스터디소개
   recruitTarget: string; // 모집대상
 };

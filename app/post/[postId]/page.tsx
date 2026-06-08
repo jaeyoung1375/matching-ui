@@ -8,6 +8,7 @@ import { ChevronLeft, Clock, Users, Calendar } from "lucide-react";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import CommentSection from "./components/CommentSection";
+import ApplyModal from "./components/ApplyModal";
 import { usePostQuery } from "@/features/post/post.query";
 import { calcDday, formatDateToKorean } from "@/util/DateUtil";
 
@@ -65,6 +66,7 @@ export default function StudyDetailPage() {
   const params = useParams();
   const postId = Number(params.postId);
   const [bookmarked, setBookmarked] = useState(false);
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
 
   const { data: post } = usePostQuery(postId);
 
@@ -219,20 +221,20 @@ export default function StudyDetailPage() {
 
                 {/* 포지션별 모집 현황 */}
                 <div className="flex flex-col gap-3 mb-4">
-                  {memoData.recruitPositTypeNm.map((pos) => (
-                    <div key={pos}>
+                  {memoData.positions.map((pos) => (
+                    <div key={pos.recruitPositTypeCd}>
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-[13px] font-semibold text-ink-700">
-                          {pos}
+                          {pos.recruitPositTypeNm}
                         </span>
                       </div>
                       <div className="flex gap-1.5">
-                        {Array.from({ length: pos.max }).map((_, i) => (
+                        {Array.from({ length: pos.recruitCnt }).map((_, i) => (
                           <div
                             key={i}
                             className={clsx(
                               "w-2.5 h-2.5 rounded-full",
-                              i < pos.current ? "bg-teamo" : "bg-ink-200",
+                              i < pos.currentCnt! ? "bg-teamo" : "bg-ink-200",
                             )}
                           />
                         ))}
@@ -242,7 +244,12 @@ export default function StudyDetailPage() {
                 </div>
 
                 {/* 버튼 */}
-                <Button variant="primary" size="lg" className="w-full mb-2">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full mb-2"
+                  onClick={() => setApplyModalOpen(true)}
+                >
                   지원하기
                 </Button>
                 <button
@@ -269,6 +276,18 @@ export default function StudyDetailPage() {
           </div>
         )}
       </div>
+
+      {/* 지원하기 모달 */}
+      {applyModalOpen && memoData && (
+        <ApplyModal
+          postId={postId}
+          positions={(memoData.recruitPositTypeNm ?? []).map((nm, i) => ({
+            cd: String(i),
+            nm,
+          }))}
+          onClose={() => setApplyModalOpen(false)}
+        />
+      )}
     </main>
   );
 }

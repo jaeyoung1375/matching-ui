@@ -1,13 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCodeQuery } from "@/features/code/code.query";
 import SelectBox from "@/components/SelectBox";
 import TeamoDatePicker from "@/components/TeamoDatePicker";
 import { Controller, useForm } from "react-hook-form";
-import { PostRegisterRequest } from "@/features/post/post.type";
+import {
+  PostRegisterRequest,
+  RecruitPosition,
+} from "@/features/post/post.type";
 import { formatDateToYYYYMMDD, parseYYYYMMDD } from "@/util/DateUtil";
 import MultiSelect from "@/components/MultiSelectBox";
 import { useRegisterPostMutation } from "@/features/post/post.mutation";
@@ -62,6 +66,13 @@ function TextInput({
 export default function PostRegister() {
   const router = useRouter();
 
+  /** 포지션별 모집인원 state */
+  const [recruitPositions, setRecruitPositions] = useState<RecruitPosition[]>(
+    [],
+  );
+  const [selectedPositCd, setSelectedPositCd] = useState<string>("");
+  const [selectedPositCnt, setSelectedPositCnt] = useState<string>("1");
+
   /** 모집역할코드 조회 */
   const { data: ROLES } = useCodeQuery({ comCdId: "RECRUIT_POSIT_TYPE_CD" });
 
@@ -72,24 +83,56 @@ export default function PostRegister() {
 
   const { control, register, handleSubmit } = useForm<PostRegisterRequest>({
     defaultValues: {
-      recruitEndDate: formatDateToYYYYMMDD(new Date()), // 모집마감일
-      progressTypeCd: "10", // 진행방식
-      recruitCnt: "1",
+      recruitEndDate: formatDateToYYYYMMDD(new Date()),
+      progressTypeCd: "10",
       progressPeriod: "1",
     },
   });
+
+  /** 포지션 추가 */
+  const handleAddPosition = () => {
+    if (!selectedPositCd) return;
+    const alreadyAdded = recruitPositions.some(
+      (p) => p.recruitPositTypeCd === selectedPositCd,
+    );
+    if (alreadyAdded) return;
+    setRecruitPositions((prev) => [
+      ...prev,
+      {
+        recruitPositTypeCd: selectedPositCd,
+        recruitCnt: Number(selectedPositCnt),
+      },
+    ]);
+    setSelectedPositCd("");
+    setSelectedPositCnt("1");
+  };
+
+  /** 포지션 삭제 */
+  const handleRemovePosition = (cd: string) => {
+    setRecruitPositions((prev) =>
+      prev.filter((p) => p.recruitPositTypeCd !== cd),
+    );
+  };
+
+  /** 전체 모집인원 합산 */
+  const totalRecruitCnt = recruitPositions.reduce(
+    (sum, p) => sum + p.recruitCnt,
+    0,
+  );
 
   /**
    * 글쓰기 버튼
    */
   const onsubmit = (data: PostRegisterRequest) => {
-    registerPost(data, {
-      onSuccess: ({ data }) => {
-        console.log("dd?");
-        router.push(`/post/${data.postId}`);
+    registerPost(
+      { ...data, recruitPositions },
+      {
+        onSuccess: ({ data }) => {
+          router.push(`/post/${data.postId}`);
+        },
+        onError: (err) => console.log("err : ", err),
       },
-      onError: (err) => console.log("err : ", err),
-    });
+    );
   };
 
   return (
@@ -127,7 +170,7 @@ export default function PostRegister() {
               />
             </div>
 
-            {/* 진행 방식 / 모집 인원 */}
+            {/* 진행 방식 */}
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <FieldLabel required>진행 방식</FieldLabel>
@@ -140,25 +183,6 @@ export default function PostRegister() {
                         { label: "온라인", value: "10" },
                         { label: "오프라인", value: "20" },
                         { label: "온/오프라인", value: "30" },
-                      ]}
-                      onChange={field.onChange}
-                      value={field.value}
-                    />
-                  )}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <FieldLabel required>모집 인원</FieldLabel>
-                <Controller
-                  control={control}
-                  name="recruitCnt"
-                  render={({ field }) => (
-                    <SelectBox
-                      options={[
-                        { label: "1명", value: "1" },
-                        { label: "2명", value: "2" },
-                        { label: "3명", value: "3" },
-                        { label: "4명", value: "4" },
                       ]}
                       onChange={field.onChange}
                       value={field.value}
@@ -232,23 +256,87 @@ export default function PostRegister() {
             {/* 모집 역할 */}
             <div className="flex flex-col gap-2">
               <FieldLabel required>모집 역할</FieldLabel>
-              <Controller
-                control={control}
-                name="recruitPositTypeCd"
-                render={({ field }) => (
-                  <MultiSelect
+
+              {/* 포지션 추가 입력 행 */}
+              <div className="flex gap-2 items-center">
+                <div className="flex-1">
+                  <SelectBox
                     options={
-                      ROLES?.map((t) => ({
-                        label: t.dtlCdNm,
-                        value: t.dtlCdId,
-                      })) ?? []
+                      ROLES?.filter(
+                        (r) =>
+                          !recruitPositions.some(
+                            (p) => p.recruitPositTypeCd === r.dtlCdId,
+                          ),
+                      ).map((r) => ({ label: r.dtlCdNm, value: r.dtlCdId })) ??
+                      []
                     }
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="모집역할을 선택해주세요"
+                    value={selectedPositCd}
+                    onChange={setSelectedPositCd}
+                    placeholder="포지션 선택"
                   />
-                )}
-              />
+                </div>
+                <div className="w-28">
+                  <SelectBox
+                    options={Array.from({ length: 10 }, (_, i) => ({
+                      label: `${i + 1}명`,
+                      value: String(i + 1),
+                    }))}
+                    value={selectedPositCnt}
+                    onChange={setSelectedPositCnt}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  size="md"
+                  leftIcon={<Plus size={14} />}
+                  onClick={handleAddPosition}
+                  disabled={!selectedPositCd}
+                >
+                  추가
+                </Button>
+              </div>
+
+              {/* 추가된 포지션 목록 */}
+              {recruitPositions.length > 0 && (
+                <div className="flex flex-col gap-2 mt-1">
+                  {recruitPositions.map((pos) => {
+                    const nm =
+                      ROLES?.find((r) => r.dtlCdId === pos.recruitPositTypeCd)
+                        ?.dtlCdNm ?? pos.recruitPositTypeCd;
+                    return (
+                      <div
+                        key={pos.recruitPositTypeCd}
+                        className="flex items-center justify-between px-4 py-2.5 bg-teamo-soft border border-teamo/20 rounded-[10px]"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-[13px] font-bold text-teamo">
+                            {nm}
+                          </span>
+                          <span className="text-[13px] text-ink-500">
+                            {pos.recruitCnt}명 모집
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemovePosition(pos.recruitPositTypeCd)
+                          }
+                          className="text-ink-300 hover:text-red-400 transition-colors"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <p className="text-[12px] text-ink-400 text-right">
+                    전체 모집인원:{" "}
+                    <span className="font-bold text-teamo">
+                      {totalRecruitCnt}명
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* 스터디 소개 */}
