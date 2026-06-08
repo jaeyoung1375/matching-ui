@@ -17,14 +17,16 @@ jobs:
     steps:
       # 1️⃣ 깃 repo 체크아웃
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          clean: false
 
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
 
       # 3️⃣ 패키지 설치 (lockfile 기준)
       - name: Install dependencies
