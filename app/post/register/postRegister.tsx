@@ -100,6 +100,7 @@ export default function PostRegister() {
       ...prev,
       {
         recruitPositTypeCd: selectedPositCd,
+        recruitPositTypeNm: "",
         recruitCnt: Number(selectedPositCnt),
       },
     ]);
