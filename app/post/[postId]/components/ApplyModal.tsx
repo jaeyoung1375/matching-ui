@@ -29,17 +29,17 @@ const TECH_STACK_LIST = [
   "Tailwind CSS",
 ];
 
-type Position = {
-  cd: string;
-  nm: string;
-};
-
 interface ApplyModalProps {
   postId: number;
-  positions: Position[]; // 해당 게시글의 모집 포지션 목록
+  positions: RecruitProps[]; // 해당 게시글의 모집 포지션 목록
   onClose: () => void;
   onSuccess?: () => void;
 }
+
+type RecruitProps = {
+  code: string;
+  name: string;
+};
 
 export default function ApplyModal({
   postId,
@@ -80,7 +80,7 @@ export default function ApplyModal({
       {
         postId,
         recruitPositTypeCd: selectedPosition,
-        techStackTypeCd: selectedTechStacks,
+        techStackCd: selectedTechStacks,
         applyReason: applyReason.trim(),
         portfolioUrl: portfolioUrl.trim() || undefined,
       },
@@ -134,20 +134,20 @@ export default function ApplyModal({
             <div className="flex flex-wrap gap-2">
               {positions.map((pos) => (
                 <button
-                  key={pos.cd}
+                  key={pos.code}
                   type="button"
                   onClick={() => {
-                    setSelectedPosition(pos.cd);
+                    setSelectedPosition(pos.code);
                     setErrors((prev) => ({ ...prev, position: undefined }));
                   }}
                   className={clsx(
                     "px-4 py-2 rounded-[10px] text-[13px] font-semibold border transition-all duration-150",
-                    selectedPosition === pos.cd
+                    selectedPosition === pos.code
                       ? "bg-teamo text-white border-teamo shadow-sm"
                       : "bg-white text-ink-600 border-ink-200 hover:border-teamo hover:text-teamo",
                   )}
                 >
-                  {pos.nm}
+                  {pos.name}
                 </button>
               ))}
             </div>

@@ -281,9 +281,9 @@ export default function StudyDetailPage() {
       {applyModalOpen && memoData && (
         <ApplyModal
           postId={postId}
-          positions={(memoData.recruitPositTypeNm ?? []).map((nm, i) => ({
-            cd: String(i),
-            nm,
+          positions={(memoData.positions ?? []).map((idx) => ({
+            code: idx.recruitPositTypeCd,
+            name: idx.recruitPositTypeNm,
           }))}
           onClose={() => setApplyModalOpen(false)}
         />

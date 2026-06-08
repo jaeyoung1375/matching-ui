@@ -6,7 +6,7 @@ export type ApplyRequest = {
   recruitPositTypeCd: string;
 
   /** 기술스택 코드 목록 */
-  techStackTypeCd: string[];
+  techStackCd: string[];
 
   /** 지원 동기 */
   applyReason: string;

@@ -125,7 +125,7 @@ export type PostRequest = {
 // 조회용 (상세 페이지)
 export type RecruitPosition = {
   recruitPositTypeCd: string; // 포지션 코드
-  recruitPositTypeNm?: string; // 포지션명
+  recruitPositTypeNm: string; // 포지션명
   recruitCnt: number; // 모집인원
   currentCnt?: number; // 현재인원
 };
