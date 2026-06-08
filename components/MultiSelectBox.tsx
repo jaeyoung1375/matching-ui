@@ -13,7 +13,12 @@ const triggerSizeMap: Record<SelectSize, string> = {
   lg: "min-h-12 text-base",
 };
 
-interface MultiSelectBoxProps {
+export interface MultiSelectOption {
+  value: string;
+  label: string;
+}
+
+export interface MultiSelectBoxProps {
   options: SelectOption[];
   value?: string[];
   onChange?: (value: string[]) => void;
