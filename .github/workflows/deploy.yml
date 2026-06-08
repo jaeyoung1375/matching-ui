@@ -30,6 +30,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
       # 4️⃣ Next.js 빌드
       - name: Build Next.js
         run: npm run build
@@ -41,8 +49,7 @@ jobs:
       # 5️⃣ pm2로 서버 재시작
       - name: Restart server with pm2
         run: |
-          pm2 stop next-app || true
-          pm2 start npm --name next-app -- start
+          pm2 reload next-app || pm2 start npm --name next-app -- start
 
       # 6️⃣ 빌드 확인 (선택)
       - name: List build files
