@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
-import { PenSquare, Bell } from "lucide-react";
+import { PenSquare } from "lucide-react";
 import LoginModal from "@/app/login/LoginModal";
 import Image from "next/image";
 import Dropdown from "@/components/Dropdown";
 import Button from "@/components/Button";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
@@ -63,9 +64,7 @@ export default function Header() {
               {user && (
                 <>
                   {/* 알림 */}
-                  <button className="rounded-full p-2 hover:bg-neutral-100">
-                    <Bell className="h-5 w-5" />
-                  </button>
+                  <NotificationDropdown />
 
                   <Dropdown
                     trigger={
