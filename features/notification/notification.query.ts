@@ -35,21 +35,44 @@ export const useMarkNotificationAsReadMutation = () => {
   return useMutation({
     mutationFn: (notificationId: number) =>
       markNotificationAsRead(notificationId),
-    onSuccess: (_data, notificationId) => {
+    onMutate: async (notificationId) => {
+      await qc.cancelQueries({ queryKey: notificationQueryKeys.all });
+
+      const previousNotifications = qc.getQueryData<NotificationResponse[]>(
+        notificationQueryKeys.list(),
+      );
+      const previousUnreadCount = qc.getQueryData<number>(
+        notificationQueryKeys.unreadCount(),
+      );
+
       qc.setQueryData<NotificationResponse[]>(
         notificationQueryKeys.list(),
         (notifications) =>
-          notifications?.map((notification) => {
+          notifications?.filter((notification) => {
             const id = notification.notificationId ?? notification.id;
 
-            if (id !== undefined && id === notificationId) {
-              return { ...notification, isRead: true, read: true };
-            }
-
-            return notification;
+            return id === undefined || id !== notificationId;
           }),
       );
-      qc.invalidateQueries({ queryKey: notificationQueryKeys.all });
+      qc.setQueryData<number>(
+        notificationQueryKeys.unreadCount(),
+        (count) => Math.max((count ?? 1) - 1, 0),
+      );
+
+      return { previousNotifications, previousUnreadCount };
+    },
+    onError: (_error, _notificationId, context) => {
+      qc.setQueryData(
+        notificationQueryKeys.list(),
+        context?.previousNotifications,
+      );
+      qc.setQueryData(
+        notificationQueryKeys.unreadCount(),
+        context?.previousUnreadCount,
+      );
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: notificationQueryKeys.unreadCount() });
     },
   });
 };
@@ -59,18 +82,33 @@ export const useMarkAllNotificationsAsReadMutation = () => {
 
   return useMutation({
     mutationFn: markAllNotificationsAsRead,
-    onSuccess: () => {
-      qc.setQueryData<NotificationResponse[]>(
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: notificationQueryKeys.all });
+
+      const previousNotifications = qc.getQueryData<NotificationResponse[]>(
         notificationQueryKeys.list(),
-        (notifications) =>
-          notifications?.map((notification) => ({
-            ...notification,
-            isRead: true,
-            read: true,
-          })),
       );
+      const previousUnreadCount = qc.getQueryData<number>(
+        notificationQueryKeys.unreadCount(),
+      );
+
+      qc.setQueryData<NotificationResponse[]>(notificationQueryKeys.list(), []);
       qc.setQueryData(notificationQueryKeys.unreadCount(), 0);
-      qc.invalidateQueries({ queryKey: notificationQueryKeys.all });
+
+      return { previousNotifications, previousUnreadCount };
+    },
+    onError: (_error, _variables, context) => {
+      qc.setQueryData(
+        notificationQueryKeys.list(),
+        context?.previousNotifications,
+      );
+      qc.setQueryData(
+        notificationQueryKeys.unreadCount(),
+        context?.previousUnreadCount,
+      );
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: notificationQueryKeys.unreadCount() });
     },
   });
 };

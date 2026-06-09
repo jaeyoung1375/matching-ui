@@ -51,7 +51,9 @@ export default function NotificationDropdown() {
   const markAllAsReadMutation = useMarkAllNotificationsAsReadMutation();
 
   const unreadCount = unreadCountQuery.data ?? 0;
-  const notifications = notificationsQuery.data ?? [];
+  const notifications = (notificationsQuery.data ?? []).filter(
+    (notification) => !getNotificationRead(notification),
+  );
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -69,13 +71,12 @@ export default function NotificationDropdown() {
     const notificationId = getNotificationId(notification);
     const linkUrl = getNotificationUrl(notification);
 
-    if (notificationId && !getNotificationRead(notification)) {
+    if (notificationId !== undefined && !getNotificationRead(notification)) {
       await markAsReadMutation.mutateAsync(notificationId);
     }
 
-    setOpen(false);
-
     if (linkUrl) {
+      setOpen(false);
       router.push(linkUrl);
     }
   };
@@ -102,7 +103,9 @@ export default function NotificationDropdown() {
             <h2 className="text-sm font-semibold text-neutral-900">알림</h2>
             <button
               type="button"
-              disabled={unreadCount === 0 || markAllAsReadMutation.isPending}
+              disabled={
+                notifications.length === 0 || markAllAsReadMutation.isPending
+              }
               onClick={() => markAllAsReadMutation.mutate()}
               className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
@@ -146,11 +149,11 @@ export default function NotificationDropdown() {
                     onClick={() => handleNotificationClick(notification)}
                     className="flex w-full gap-3 border-b border-neutral-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-neutral-50"
                   >
-                    <span
-                      className={`mt-1 h-2 w-2 shrink-0 rounded-full ${
-                        isRead ? "bg-neutral-300" : "bg-teamo"
-                      }`}
-                    />
+                    <span className="mt-1 flex h-2 w-2 shrink-0 items-center justify-center">
+                      {!isRead && (
+                        <span className="h-2 w-2 rounded-full bg-teamo" />
+                      )}
+                    </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold text-neutral-900">
                         {getNotificationTitle(notification)}
