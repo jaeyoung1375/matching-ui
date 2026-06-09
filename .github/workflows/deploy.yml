@@ -64,5 +64,6 @@ jobs:
             cd ${{ secrets.SERVER_PATH }}
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
-            pm2 stop next-app || true
-            pm2 start next-app || pm2 start npm --name next-app -- start
+            pm2 delete next-app || true
+            cd ${{ secrets.SERVER_PATH }}
+            pm2 start npm --name next-app -- start
