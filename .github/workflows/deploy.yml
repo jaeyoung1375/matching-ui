@@ -59,6 +59,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
             cd ${{ secrets.SERVER_PATH }}
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
