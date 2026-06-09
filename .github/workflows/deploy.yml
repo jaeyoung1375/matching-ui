@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install
         run: npm ci
@@ -32,6 +32,16 @@ jobs:
 
       - name: Compress artifacts
         run: tar -czf deploy.tar.gz .next public node_modules package.json
+
+      - name: Debug SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          debug: true
+          script: echo "connected"
 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
