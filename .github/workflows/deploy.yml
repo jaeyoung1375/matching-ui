@@ -11,20 +11,59 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: install
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install
         run: npm ci
 
-      - name: build
+      - name: Build
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://146.56.116.158:9090
 
-      - name: restart
-        run: |
-          pm2 stop next-app || true
-          pm2 start next-app || pm2 start npm --name next-app -- start
+      - name: Compress artifacts
+        run: tar -czf deploy.tar.gz .next public node_modules package.json
+
+      - name: Debug SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          debug: true
+          script: echo "connected"
+
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "deploy.tar.gz"
+          target: ${{ secrets.SERVER_PATH }}
+
+      - name: Restart server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
+            cd ${{ secrets.SERVER_PATH }}
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
+            pm2 delete next-app || true
+            cd ${{ secrets.SERVER_PATH }}
+            pm2 start npm --name next-app -- start
