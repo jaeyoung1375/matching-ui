@@ -204,7 +204,7 @@ export default function StudyDetailPage() {
                           )}
                         </div>
                         <span className="text-[12px] text-ink-400">
-                          {user.description}
+                          {/* {user.description} */}
                         </span>
                       </div>
                     </div>
