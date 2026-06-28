@@ -1,5 +1,6 @@
 // src/utils/api.ts
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { logClientError } from "@/util/ClientLogUtil";
 
 interface ApiResponse<T> {
   code: string;
@@ -12,11 +13,27 @@ const api = axios.create({
   timeout: 5000, // 5초 타임아웃
 });
 
+function isClientLogRequest(url?: string) {
+  return !!url?.includes("/api/v1/public/client-logs");
+}
+
+function getRequestPath(config?: AxiosRequestConfig) {
+  return [config?.method?.toUpperCase(), config?.url].filter(Boolean).join(" ");
+}
+
 api.interceptors.response.use(
   (res: AxiosResponse<ApiResponse<unknown>>) => {
     const { code, data, message } = res.data;
 
     if (code !== "0000") {
+      if (!isClientLogRequest(res.config.url)) {
+        logClientError({
+          message: message || `API response code ${code}`,
+          componentName: "Axios response",
+          stackTrace: `${getRequestPath(res.config)}\ncode: ${code}`,
+        });
+      }
+
       return Promise.reject({ code, data, message });
     }
 
@@ -25,6 +42,23 @@ api.interceptors.response.use(
   (err) => {
     const status = err.response?.status;
     const url = err.config?.url;
+
+    if (!isClientLogRequest(url)) {
+      logClientError({
+        message:
+          err.response?.data?.message ||
+          err.message ||
+          `API request failed${status ? ` (${status})` : ""}`,
+        componentName: "Axios error",
+        stackTrace: [
+          getRequestPath(err.config),
+          status ? `status: ${status}` : undefined,
+          err.stack,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      });
+    }
 
     if (status === 401 && !url?.includes("/auth/login")) {
       const hadToken = !!localStorage.getItem("accessToken");
