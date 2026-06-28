@@ -1,4 +1,5 @@
 import { StudyCardData } from "@/components/Card";
+import { User } from "../auth/auth.type";
 
 export type PostDto = {
   /** 게시판아이디 */
@@ -112,6 +113,13 @@ export type PostResponse = StudyCardData & {
   recruitTarget: string;
 
   positions: RecruitPosition[];
+
+  applyUsers: PostApplyUser[];
+};
+
+export type PostApplyUser = {
+  userId: string;
+  name: string;
 };
 
 export type PostRequest = {
