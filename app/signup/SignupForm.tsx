@@ -10,6 +10,7 @@ import { useForm, FieldErrors } from "react-hook-form";
 import { useAlertStore } from "@/store/alertStore";
 import { SignupFormValues } from "@/features/auth/auth.type";
 import { useAuth } from "../context/AuthContext";
+import { POSITION_OPTIONS, CAREER_OPTIONS } from "@/features/auth/auth.constants";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -93,8 +94,10 @@ export default function SignupForm() {
 
       const res = await signup({
         ...data,
-        phone: data.phone.replace(/-/g, ""), // 백엔드 패턴(숫자만)에 맞게 하이픈 제거
+        phone: data.phone.replace(/-/g, ""),
         dtlCdIds: languages,
+        recruitPositTypeCd: data.recruitPositTypeCd || undefined,
+        careerYrs: data.careerYrs || undefined,
       });
 
       localStorage.setItem("accessToken", res.accessToken);
@@ -241,12 +244,47 @@ export default function SignupForm() {
           />
         </div>
 
+        {/* 포지션 */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-neutral-700">
+            포지션
+          </label>
+          <select
+            {...register("recruitPositTypeCd")}
+            className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900 bg-white"
+          >
+            <option value="">포지션 선택</option>
+            {POSITION_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* 연차 */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-neutral-700">
+            연차
+          </label>
+          <select
+            {...register("careerYrs")}
+            className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900 bg-white"
+          >
+            <option value="">연차 선택</option>
+            {CAREER_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* 관심분야 */}
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-neutral-700">
+        <div>
+          <label className="mb-2 block text-sm font-medium text-neutral-700">
             관심분야
           </label>
-
           <MultiSelect
             options={languageOptions}
             value={languages}

@@ -15,6 +15,7 @@ import { useAlertStore } from "@/store/alertStore";
 import { useAuth } from "../context/AuthContext";
 import { MyPageFormValues } from "@/features/auth/auth.type";
 import { uploadProfileImage } from "@/features/auth/auth.query";
+import { POSITION_OPTIONS, CAREER_OPTIONS } from "@/features/auth/auth.constants";
 
 export default function MyPageForm() {
   const router = useRouter();
@@ -32,6 +33,8 @@ export default function MyPageForm() {
     if (user) {
       reset({
         name: user.name,
+        recruitPositTypeCd: user.recruitPositTypeCd ?? "",
+        careerYrs: user.careerYrs ?? "",
       });
 
       if (user.languages) {
@@ -81,7 +84,7 @@ export default function MyPageForm() {
   const onSubmit = async (data: MyPageFormValues) => {
     if (!user) return;
 
-    const { name, password, confirmPassword } = data;
+    const { name, password, confirmPassword, recruitPositTypeCd, careerYrs } = data;
 
     // 비밀번호 검증
     if (password) {
@@ -105,6 +108,8 @@ export default function MyPageForm() {
         name,
         password: password || undefined,
         dtlCdIds: languages,
+        recruitPositTypeCd: recruitPositTypeCd || undefined,
+        careerYrs: careerYrs || undefined,
       });
 
       const updatedUser = await getMe();
@@ -123,13 +128,17 @@ export default function MyPageForm() {
   // 변경 여부 체크 (watch 활용)
   const nameValue = watch("name");
   const passwordValue = watch("password");
+  const positValue = watch("recruitPositTypeCd");
+  const careerValue = watch("careerYrs");
 
   const isChanged =
     nameValue !== user?.name ||
     passwordValue ||
     JSON.stringify(languages) !==
       JSON.stringify(user?.languages?.map((l) => l.dtlCdId)) ||
-    profileImage !== null;
+    profileImage !== null ||
+    (positValue || "") !== (user?.recruitPositTypeCd ?? "") ||
+    (careerValue || "") !== (user?.careerYrs ?? "");
 
   // 이미지 처리
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -289,13 +298,55 @@ export default function MyPageForm() {
           />
         </>
       )}
+      {/* 포지션 */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-neutral-700">
+          포지션
+        </label>
+        <select
+          {...register("recruitPositTypeCd")}
+          className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900 bg-white"
+        >
+          <option value="">포지션 선택</option>
+          {POSITION_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* 연차 */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-neutral-700">
+          연차
+        </label>
+        <select
+          {...register("careerYrs")}
+          className="h-12 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-neutral-900 bg-white"
+        >
+          <option value="">연차 선택</option>
+          {CAREER_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* 관심분야 */}
-      <MultiSelect
-        options={languageOptions}
-        value={languages}
-        onChange={setLanguages}
-        placeholder="관심분야 선택"
-      />
+      <div>
+        <label className="mb-2 block text-sm font-medium text-neutral-700">
+          관심분야
+        </label>
+        <MultiSelect
+          options={languageOptions}
+          value={languages}
+          onChange={setLanguages}
+          placeholder="관심분야 선택"
+          className="h-10"
+        />
+      </div>
       {/* 수정 */}
       <Button type="submit" className="h-10 bg-orange-400 text-white">
         수정하기
