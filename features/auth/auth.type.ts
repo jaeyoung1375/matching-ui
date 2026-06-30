@@ -15,6 +15,8 @@ export type SignupRequest = {
   confirmPassword: string;
   phone: string;
   dtlCdIds: string[];
+  recruitPositTypeCd?: string;
+  careerYrs?: string;
 };
 
 export type SignupResponse = {
@@ -39,6 +41,8 @@ export type User = {
   profileImageUrl?: string;
   provider: string;
   languages: Language[];
+  recruitPositTypeCd?: string;
+  careerYrs?: string;
 };
 
 export type MyPageFormValues = {
@@ -46,6 +50,8 @@ export type MyPageFormValues = {
   password?: string;
   confirmPassword?: string;
   currentPassword?: string;
+  recruitPositTypeCd?: string;
+  careerYrs?: string;
 };
 
 export type SignupFormValues = {
@@ -54,4 +60,6 @@ export type SignupFormValues = {
   password: string;
   confirmPassword: string;
   phone: string;
+  recruitPositTypeCd?: string;
+  careerYrs?: string;
 };
