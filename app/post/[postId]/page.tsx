@@ -77,6 +77,11 @@ export default function StudyDetailPage() {
       ...post,
       recruitEndDate: formatDateToKorean(post.recruitEndDate),
       deadLine: calcDday(post.recruitEndDate),
+      member: post.applyUsers.map((user, idx) => ({
+        ...user,
+        bgClass: "from-blue-400 to-blue-300",
+        isLeader: user.userId === String(post.userId),
+      })),
     };
   }, [post]);
 
@@ -176,30 +181,30 @@ export default function StudyDetailPage() {
                   현재 멤버
                 </h2>
                 <div className="flex flex-col gap-3">
-                  {MOCK.members.map((member) => (
-                    <div key={member.name} className="flex items-center gap-3">
+                  {memoData.member.map((user) => (
+                    <div key={user.name} className="flex items-center gap-3">
                       <div
                         className={clsx(
                           "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
                           "text-[15px] font-bold text-white bg-linear-to-br",
-                          member.bgClass,
+                          user.bgClass,
                         )}
                       >
-                        {member.name[0]}
+                        {user.name[0]}
                       </div>
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-center gap-2">
                           <span className="text-[14px] font-bold text-ink-900">
-                            {member.name}
+                            {user.name}
                           </span>
-                          {member.isLeader && (
+                          {user.isLeader && (
                             <span className="text-[11px] font-bold text-teamo bg-teamo-soft px-2 py-0.5 rounded-[5px]">
                               리더
                             </span>
                           )}
                         </div>
                         <span className="text-[12px] text-ink-400">
-                          {member.description}
+                          {/* {user.description} */}
                         </span>
                       </div>
                     </div>
