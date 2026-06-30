@@ -14,13 +14,13 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const stateClasses: Record<InputState, string> = {
   default: "border-neutral-200 focus:border-orange",
-  error: "border-red bg-red-soft/20 focus:border-red",
+  error: "border-danger bg-danger-soft focus:border-danger",
   success: "border-green focus:border-green",
 };
 
 const hintClasses: Record<InputState, string> = {
   default: "text-neutral-400",
-  error: "text-red",
+  error: "text-danger font-medium",
   success: "text-green",
 };
 
