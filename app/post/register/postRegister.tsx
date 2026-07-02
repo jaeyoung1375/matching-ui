@@ -83,6 +83,7 @@ export default function PostRegister() {
 
   const { control, register, handleSubmit } = useForm<PostRegisterRequest>({
     defaultValues: {
+      title: "",
       recruitEndDate: formatDateToYYYYMMDD(new Date()),
       progressTypeCd: "10",
       progressPeriod: "1",
