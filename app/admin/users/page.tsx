@@ -17,6 +17,7 @@ import {
   forceLogout,
 } from "@/features/admin/admin.query";
 import { AdminUser } from "@/features/admin/admin.type";
+import { useAlertStore } from "@/store/alertStore";
 
 // ── 상태 / 권한 뱃지 ────────────────────────────────────────
 
@@ -181,6 +182,7 @@ function UserDetailModal({
 // ── 메인 페이지 ─────────────────────────────────────────────
 
 export default function AdminUsersPage() {
+  const { setAlert } = useAlertStore();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -220,11 +222,11 @@ export default function AdminUsersPage() {
   const handleRoleChange = async (userId: string, role: string) => {
     const target = users.find((u) => u.userId === userId);
     if (!target) {
-      alert("존재하지 않는 회원입니다.");
+      setAlert("존재하지 않는 회원입니다.");
       return;
     }
     if (target.status === "DEACTIVATE") {
-      alert("탈퇴한 회원은 권한을 변경할 수 없습니다.");
+      setAlert("탈퇴한 회원은 권한을 변경할 수 없습니다.");
       return;
     }
     try {
@@ -236,25 +238,25 @@ export default function AdminUsersPage() {
         prev?.userId === userId ? { ...prev, role } : prev,
       );
     } catch {
-      alert("권한 변경에 실패했습니다.");
+      setAlert("권한 변경에 실패했습니다.");
     }
   };
 
   const handleForceLogout = async (userId: string) => {
     const target = users.find((u) => u.userId === userId);
     if (!target) {
-      alert("존재하지 않는 회원입니다.");
+      setAlert("존재하지 않는 회원입니다.");
       return;
     }
     if (target.status === "DEACTIVATE") {
-      alert("탈퇴한 회원은 강제 로그아웃할 수 없습니다.");
+      setAlert("탈퇴한 회원은 강제 로그아웃할 수 없습니다.");
       return;
     }
     try {
       await forceLogout(userId);
-      alert("강제 로그아웃 처리되었습니다.");
+      setAlert("강제 로그아웃 처리되었습니다.");
     } catch {
-      alert("강제 로그아웃에 실패했습니다.");
+      setAlert("강제 로그아웃에 실패했습니다.");
     }
   };
 

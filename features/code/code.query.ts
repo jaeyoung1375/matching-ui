@@ -85,7 +85,7 @@ export const useAdminDtlCodeListQuery = (comCdId?: string) =>
 export const useCreateAdminDtlCodeMutation = (comCdId: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: DtlCodeCreateRequest) => createAdminDtlCode(body),
+    mutationFn: (body: DtlCodeCreateRequest) => createAdminDtlCode(comCdId, body),
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: ["admin", "dtl-codes", comCdId] }),
   });
@@ -100,7 +100,7 @@ export const useUpdateAdminDtlCodeMutation = (comCdId: string) => {
     }: {
       dtlCdId: string;
       body: DtlCodeUpdateRequest;
-    }) => updateAdminDtlCode(dtlCdId, body),
+    }) => updateAdminDtlCode(comCdId, dtlCdId, body),
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: ["admin", "dtl-codes", comCdId] }),
   });
@@ -109,7 +109,7 @@ export const useUpdateAdminDtlCodeMutation = (comCdId: string) => {
 export const useDeleteAdminDtlCodeMutation = (comCdId: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (dtlCdId: string) => deleteAdminDtlCode(dtlCdId),
+    mutationFn: (dtlCdId: string) => deleteAdminDtlCode(comCdId, dtlCdId),
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: ["admin", "dtl-codes", comCdId] }),
   });

@@ -47,7 +47,9 @@ export default function ApplyModal({
   onClose,
   onSuccess,
 }: ApplyModalProps) {
-  const [selectedPosition, setSelectedPosition] = useState<string>("");
+  const [selectedPosition, setSelectedPosition] = useState<string>(
+    positions.length === 1 ? positions[0].code : "",
+  );
   const [selectedTechStacks, setSelectedTechStacks] = useState<string[]>([]);
   const [applyReason, setApplyReason] = useState("");
   const [portfolioUrl, setPortfolioUrl] = useState("");

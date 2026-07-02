@@ -54,7 +54,7 @@ const MultiSelectBox = forwardRef<HTMLButtonElement, MultiSelectBoxProps>(
       onChange?.(next);
     };
 
-    const remove = (optValue: string, e: React.MouseEvent) => {
+    const remove = (optValue: string, e: React.SyntheticEvent) => {
       e.stopPropagation();
       onChange?.(value.filter((v) => v !== optValue));
     };
@@ -87,13 +87,20 @@ const MultiSelectBox = forwardRef<HTMLButtonElement, MultiSelectBoxProps>(
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] bg-teamo-soft text-teamo text-[12px] font-semibold"
                 >
                   {opt.label}
-                  <button
-                    type="button"
+                  <span
+                    role="button"
+                    tabIndex={0}
                     onClick={(e) => remove(opt.value, e)}
-                    className="hover:text-teamo/60 transition-colors"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        remove(opt.value, e);
+                      }
+                    }}
+                    className="hover:text-teamo/60 transition-colors cursor-pointer"
                   >
                     <X className="w-3 h-3" />
-                  </button>
+                  </span>
                 </span>
               ))
             )}

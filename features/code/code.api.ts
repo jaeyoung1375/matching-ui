@@ -30,24 +30,24 @@ export const fetchAdminComCodeList = (params?: {
 }) => get<ComCodeResponse[]>("/api/v1/admin/codes", { params });
 
 export const createAdminComCode = (body: ComCodeCreateRequest) =>
-  post<void>("/api/v1/admin/code", body);
+  post<void>("/api/v1/admin/codes", body);
 
 export const updateAdminComCode = (comCdId: string, body: ComCodeUpdateRequest) =>
-  put<void>(`/api/v1/admin/code/${comCdId}`, body);
+  put<void>(`/api/v1/admin/codes/${comCdId}`, body);
 
 export const deleteAdminComCode = (comCdId: string) =>
-  deleteData<void>(`/api/v1/admin/code/${comCdId}`);
+  deleteData<void>(`/api/v1/admin/codes/${comCdId}`);
 
 // ── Admin APIs - 상세코드(하위코드) ──────────────────────
 
 export const fetchAdminDtlCodeList = (comCdId: string) =>
-  get<codeResponse[]>(`/api/v1/admin/code/${comCdId}/dtl`);
+  get<codeResponse[]>(`/api/v1/admin/codes/${comCdId}/details`);
 
-export const createAdminDtlCode = (body: DtlCodeCreateRequest) =>
-  post<void>("/api/v1/admin/code/dtl", body);
+export const createAdminDtlCode = (comCdId: string, body: DtlCodeCreateRequest) =>
+  post<void>(`/api/v1/admin/codes/${comCdId}/details`, body);
 
-export const updateAdminDtlCode = (dtlCdId: string, body: DtlCodeUpdateRequest) =>
-  put<void>(`/api/v1/admin/code/dtl/${dtlCdId}`, body);
+export const updateAdminDtlCode = (comCdId: string, dtlCdId: string, body: DtlCodeUpdateRequest) =>
+  put<void>(`/api/v1/admin/codes/${comCdId}/details/${dtlCdId}`, body);
 
-export const deleteAdminDtlCode = (dtlCdId: string) =>
-  deleteData<void>(`/api/v1/admin/code/dtl/${dtlCdId}`);
+export const deleteAdminDtlCode = (comCdId: string, dtlCdId: string) =>
+  deleteData<void>(`/api/v1/admin/codes/${comCdId}/details/${dtlCdId}`);
