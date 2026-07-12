@@ -9,8 +9,10 @@ import { useMemo, useState } from "react";
 import clsx from "clsx";
 import CommentSection from "./components/CommentSection";
 import ApplyModal from "./components/ApplyModal";
+import ApplyManageModal from "./components/ApplyManageModal";
 import { usePostQuery } from "@/features/post/post.query";
 import { calcDday, formatDateToKorean } from "@/util/DateUtil";
+import { useAuth } from "@/app/context/AuthContext";
 
 const MOCK = {
   title: "React + TypeScript 실전 프로젝트 스터디",
@@ -65,10 +67,13 @@ export default function StudyDetailPage() {
   const router = useRouter();
   const params = useParams();
   const postId = Number(params.postId);
+  const { user } = useAuth();
   const [bookmarked, setBookmarked] = useState(false);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [applicantModalOpen, setApplicantModalOpen] = useState(false);
 
   const { data: post } = usePostQuery(postId);
+  const isOwner = !!user && !!post && user.id === post.userId;
 
   const memoData = useMemo(() => {
     if (!post) return;
@@ -249,25 +254,38 @@ export default function StudyDetailPage() {
                 </div>
 
                 {/* 버튼 */}
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="w-full mb-2"
-                  onClick={() => setApplyModalOpen(true)}
-                >
-                  지원하기
-                </Button>
-                <button
-                  onClick={() => setBookmarked((v) => !v)}
-                  className={clsx(
-                    "w-full h-10.5 rounded-[10px] text-[15px] font-bold border transition-colors duration-150 flex items-center justify-center gap-2",
-                    bookmarked
-                      ? "bg-teamo-soft text-teamo border-teamo"
-                      : "bg-transparent text-ink-700 border-ink-200 hover:border-teamo hover:text-teamo hover:bg-teamo-soft",
-                  )}
-                >
-                  {bookmarked ? "관심 등록됨" : "관심 등록"}
-                </button>
+                {isOwner ? (
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="w-full mb-2"
+                    onClick={() => setApplicantModalOpen(true)}
+                  >
+                    지원자 관리
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="w-full mb-2"
+                      onClick={() => setApplyModalOpen(true)}
+                    >
+                      지원하기
+                    </Button>
+                    <button
+                      onClick={() => setBookmarked((v) => !v)}
+                      className={clsx(
+                        "w-full h-10.5 rounded-[10px] text-[15px] font-bold border transition-colors duration-150 flex items-center justify-center gap-2",
+                        bookmarked
+                          ? "bg-teamo-soft text-teamo border-teamo"
+                          : "bg-transparent text-ink-700 border-ink-200 hover:border-teamo hover:text-teamo hover:bg-teamo-soft",
+                      )}
+                    >
+                      {bookmarked ? "관심 등록됨" : "관심 등록"}
+                    </button>
+                  </>
+                )}
 
                 {/* 통계 */}
                 <div className="mt-4 pt-4 border-t border-ink-100 text-center">
@@ -291,6 +309,14 @@ export default function StudyDetailPage() {
             name: idx.recruitPositTypeNm,
           }))}
           onClose={() => setApplyModalOpen(false)}
+        />
+      )}
+
+      {/* 지원자 관리 모달 (스터디장 전용) */}
+      {applicantModalOpen && (
+        <ApplyManageModal
+          postId={postId}
+          onClose={() => setApplicantModalOpen(false)}
         />
       )}
     </main>

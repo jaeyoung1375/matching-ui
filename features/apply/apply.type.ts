@@ -1,3 +1,5 @@
+import { ApplyStatusCd } from "./apply.constants";
+
 export type ApplyRequest = {
   /** 게시글 ID */
   postId: number;
@@ -21,4 +23,27 @@ export type ApplyResponse = {
   userId: number;
   statusCd: string;
   regDt: string;
+};
+
+/** 지원자 관리용 지원 내역 (스터디장 조회) */
+export type ApplicantResponse = {
+  applyId: number;
+  postId: number;
+  userId: number;
+  name: string;
+  profileImageUrl?: string;
+  recruitPositTypeCd: string;
+  recruitPositTypeNm: string;
+  techStackCd: string[];
+  techStackNm: string[];
+  applyReason: string;
+  portfolioUrl?: string;
+  statusCd: ApplyStatusCd;
+  statusNm: string;
+  regDt: string;
+};
+
+export type ApplyStatusUpdateRequest = {
+  applyId: number;
+  statusCd: ApplyStatusCd;
 };
