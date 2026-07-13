@@ -54,9 +54,11 @@ export function calcDday(yyyyMMdd: string): string {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const target = parseYYYYMMDD(yyyyMMdd);
-  const diff = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const diff = Math.round(
+    (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  );
 
   if (diff === 0) return "D-Day";
   if (diff > 0) return `D-${diff}`;
-  return `D+${Math.abs(diff)}`;
+  return "expired";
 }

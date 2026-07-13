@@ -78,10 +78,14 @@ export default function StudyDetailPage() {
   const memoData = useMemo(() => {
     if (!post) return;
 
+    // 마감기한
+    const deadLine = calcDday(post.recruitEndDate);
+
     return {
       ...post,
       recruitEndDate: formatDateToKorean(post.recruitEndDate),
-      deadLine: calcDday(post.recruitEndDate),
+      deadLine,
+      isDeadlineOver: deadLine === "expired",
       member: post.applyUsers.map((user, idx) => ({
         ...user,
         bgClass: "from-blue-400 to-blue-300",
@@ -109,7 +113,9 @@ export default function StudyDetailPage() {
               {/* 헤더 카드 */}
               <div className="bg-white rounded-[16px] border border-ink-200/70 p-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <Badge variant="open">모집중</Badge>
+                  <Badge variant={memoData.isDeadlineOver ? "closed" : "open"}>
+                    {memoData.isDeadlineOver ? "마감" : "모집중"}
+                  </Badge>
                   <Badge variant="online">{MOCK.progressTypeNm}</Badge>
                 </div>
                 <h1 className="text-[22px] font-extrabold text-ink-900 tracking-[-0.02em] leading-[1.35] mb-4">
@@ -126,7 +132,9 @@ export default function StudyDetailPage() {
                   </span>
                   <span className="flex items-center gap-1.5 text-teamo font-bold">
                     <Calendar size={13} />
-                    마감 {memoData.deadLine} ({memoData.recruitEndDate})
+                    {memoData.isDeadlineOver
+                      ? "마감"
+                      : `마감 ${memoData.deadLine} (${memoData.recruitEndDate})`}
                   </span>
                 </div>
               </div>
@@ -226,7 +234,11 @@ export default function StudyDetailPage() {
               <div className="bg-white rounded-[16px] border border-ink-200/70 p-5">
                 <h3 className="text-[16px] font-bold text-ink-900">지원하기</h3>
                 <p className="text-[13px] text-teamo mt-0.5 mb-4">
-                  마감까지 {memoData.deadLine} 남았습니다
+                  {memoData.isDeadlineOver ? (
+                    "마감되었습니다"
+                  ) : (
+                    <>마감까지 {memoData.deadLine} 남았습니다</>
+                  )}
                 </p>
 
                 {/* 포지션별 모집 현황 */}
@@ -270,8 +282,9 @@ export default function StudyDetailPage() {
                       size="lg"
                       className="w-full mb-2"
                       onClick={() => setApplyModalOpen(true)}
+                      disabled={memoData.isDeadlineOver}
                     >
-                      지원하기
+                      {memoData.isDeadlineOver ? "마감" : "지원하기"}
                     </Button>
                     <button
                       onClick={() => setBookmarked((v) => !v)}

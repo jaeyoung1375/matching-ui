@@ -12,6 +12,7 @@ import {
   APPLY_STATUS_CD,
   ApplyStatusCd,
 } from "@/features/apply/apply.constants";
+import { useAlertStore } from "@/store/alertStore";
 
 interface ApplicantManageModalProps {
   postId: number;
@@ -187,6 +188,8 @@ export default function ApplicantManageModal({
   const [filter, setFilter] = useState<StatusFilter>("ALL");
   const [updatingApplyId, setUpdatingApplyId] = useState<number | null>(null);
 
+  const setAlert = useAlertStore((state) => state.setAlert);
+
   const { data: applicants, isLoading } = useApplicantsQuery(postId);
   const { mutate: updateStatus, isPending } =
     useUpdateApplyStatusMutation(postId);
@@ -218,7 +221,12 @@ export default function ApplicantManageModal({
     setUpdatingApplyId(applyId);
     updateStatus(
       { applyId, statusCd },
-      { onSettled: () => setUpdatingApplyId(null) },
+      {
+        onSuccess: () => {
+          setAlert("완료되었습니다.");
+        },
+        onSettled: () => setUpdatingApplyId(null),
+      },
     );
   };
 
