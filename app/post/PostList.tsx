@@ -55,7 +55,7 @@ export default function PostList({ data }: { data: PostResponse[] }) {
     <>
       <div className="max-w-6xl mx-auto px-4">
         {/* <SearchHeader selectOptions={selectOptions} onSearch={handleSearch} /> */}
-        <div className="grid grid-cols-4 gap-4 mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-16">
           {data?.map((item) => {
             return <Card key={item.postId} data={item} />;
           })}

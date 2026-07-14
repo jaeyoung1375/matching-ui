@@ -45,23 +45,23 @@ export default function Home() {
   return (
     <>
       <main className="min-h-screen bg-ink-50">
-        <section className="bg-gradient-to-br from-[#FFF8F0] via-teamo-soft to-teamo-light border-b border-teamo-100 py-16 px-6">
+        <section className="bg-gradient-to-br from-[#FFF8F0] via-teamo-soft to-teamo-light border-b border-teamo-100 py-10 px-4 sm:py-16 sm:px-6">
           <div className="max-w-[1200px] mx-auto">
             <div className="inline-flex items-center gap-1.5 bg-white border border-teamo-100 rounded-full px-3.5 py-1.5 text-[13px] font-bold text-teamo mb-5">
               <span className="w-[7px] h-[7px] rounded-full bg-teamo" />
               IT 직군 스터디 커뮤니티
             </div>
-            <h1 className="text-[48px] font-extrabold text-ink-900 tracking-[-0.03em] leading-[1.15] mb-4">
+            <h1 className="text-[32px] sm:text-[40px] lg:text-[48px] font-extrabold text-ink-900 tracking-[-0.03em] leading-[1.15] mb-4">
               함께 성장하는
               <br />
               <em className="not-italic text-teamo">스터디 팀</em>을 찾아보세요
             </h1>
-            <p className="text-[17px] text-ink-700 leading-relaxed mb-8 max-w-[500px]">
+            <p className="text-[15px] sm:text-[17px] text-ink-700 leading-relaxed mb-8 max-w-[500px]">
               개발자, 기획자, 디자이너 — IT 직종 취준생과 현업자를 위한
               <br />
               스터디 모집 플랫폼
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button variant="primary" size="xl">
                 스터디 둘러보기
               </Button>
@@ -69,14 +69,14 @@ export default function Home() {
                 스터디 만들기 →
               </Button>
             </div>
-            <div className="flex gap-8 mt-10">
+            <div className="flex flex-wrap gap-6 sm:gap-8 mt-10">
               {[
                 ["2,840+", "활성 스터디"],
                 ["18,500+", "가입 회원"],
                 ["94%", "매칭 성공률"],
               ].map(([num, label]) => (
                 <div key={label}>
-                  <div className="text-[26px] font-extrabold text-ink-900 tracking-[-0.02em]">
+                  <div className="text-[22px] sm:text-[26px] font-extrabold text-ink-900 tracking-[-0.02em]">
                     {num}
                   </div>
                   <div className="text-[13px] text-ink-400 mt-0.5">{label}</div>
@@ -88,7 +88,7 @@ export default function Home() {
 
         {/* ── 필터바 ── */}
         <div className="sticky top-[60px] z-40 bg-white border-b border-ink-200/70">
-          <div className="max-w-[1400px] mx-auto px-6">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
             <div className="flex items-center gap-2 h-[52px] overflow-x-auto scrollbar-hide">
               {ROLE_FILTERS.map((f) => (
                 <FilterChip
@@ -119,7 +119,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="max-w-[1500px] mx-auto px-6 py-8 grid grid-cols-[1fr_280px] gap-7">
+        <div className="max-w-[1500px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-7">
           <div className="mb-5">
             <Input
               placeholder="스터디, 기술스택, 역할로 검색해보세요"

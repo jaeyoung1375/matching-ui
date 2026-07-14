@@ -96,7 +96,7 @@ export default function StudyDetailPage() {
 
   return (
     <main className="min-h-screen bg-ink-50">
-      <div className="max-w-[1200px] mx-auto px-6 py-6">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
         {/* 뒤로가기 */}
         <button
           onClick={() => router.back()}
@@ -107,7 +107,7 @@ export default function StudyDetailPage() {
         </button>
 
         {memoData && (
-          <div className="grid grid-cols-[1fr_300px] gap-7 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-7 items-start">
             {/* ── 좌측 본문 ── */}
             <div className="flex flex-col gap-5">
               {/* 헤더 카드 */}
@@ -230,7 +230,7 @@ export default function StudyDetailPage() {
             </div>
 
             {/* ── 우측 지원 카드 ── */}
-            <div className="sticky top-[76px]">
+            <div className="lg:sticky lg:top-[76px]">
               <div className="bg-white rounded-[16px] border border-ink-200/70 p-5">
                 <h3 className="text-[16px] font-bold text-ink-900">지원하기</h3>
                 <p className="text-[13px] text-teamo mt-0.5 mb-4">
