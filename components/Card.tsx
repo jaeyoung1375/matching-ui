@@ -22,16 +22,13 @@ export interface StudyCardData {
   comments: number;
   recruitCnt: string; // '2/4명'
   bookmarked?: boolean;
+  isDeadlineOver?: string; // 마감여부
 }
 
 interface StudyCardProps {
   data: StudyCardData;
   onBookmark?: (id: string) => void;
   className?: string;
-}
-
-function formatNum(n: number) {
-  return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 }
 
 export function Card({ data, onBookmark, className }: StudyCardProps) {
@@ -45,8 +42,8 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
     status,
     deadline,
     deadlineUrgent,
+    isDeadlineOver,
     viewCnt,
-    comments,
     recruitCnt,
     bookmarked,
   } = data;
@@ -64,13 +61,16 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
       {/* 상단: 배지 + 북마크 */}
       <div className="flex items-center justify-between px-4 pt-3.5">
         <div className="flex items-center gap-1.5 flex-wrap">
-          {status !== "open" && <Badge variant="open">모집중</Badge>}
-          {status === "full" && <Badge variant="closed">모집완료</Badge>}
+          {isDeadlineOver === "Y" ? (
+            <Badge variant="closed">마감</Badge>
+          ) : (
+            <Badge variant="open">모집중</Badge>
+          )}
           <Badge
             variant={
-              progressTypeCd === "online"
+              progressTypeCd === "온라인"
                 ? "online"
-                : progressTypeCd === "offline"
+                : progressTypeCd === "오프라인"
                   ? "offline"
                   : "new"
             }
