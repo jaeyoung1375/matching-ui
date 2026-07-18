@@ -29,13 +29,12 @@ export default function Home() {
   ];
   const SORT_OPTIONS = ["최신순", "인기순", "마감임박"];
 
-  const [activeFilter, setActiveFilter] = useState("전체");
-  const [activeSort, setActiveSort] = useState("최신순");
-  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set(["1"]));
-  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState<string>("전체");
+  const [activeSort, setActiveSort] = useState<string>("최신순");
 
   const [req, setReq] = useState<PostRequest>({
     pageNum: 1,
+    keyword: "",
   });
 
   const { data: post, isLoading } = usePostListQuery(req);
@@ -45,7 +44,7 @@ export default function Home() {
   return (
     <>
       <main className="min-h-screen bg-ink-50">
-        <section className="bg-gradient-to-br from-[#FFF8F0] via-teamo-soft to-teamo-light border-b border-teamo-100 py-10 px-4 sm:py-16 sm:px-6">
+        <section className="bg-linear-to-br from-[#FFF8F0] via-teamo-soft to-teamo-light border-b border-teamo-100 py-10 px-4 sm:py-16 sm:px-6">
           <div className="max-w-[1200px] mx-auto">
             <div className="inline-flex items-center gap-1.5 bg-white border border-teamo-100 rounded-full px-3.5 py-1.5 text-[13px] font-bold text-teamo mb-5">
               <span className="w-[7px] h-[7px] rounded-full bg-teamo" />
@@ -87,9 +86,9 @@ export default function Home() {
         </section>
 
         {/* ── 필터바 ── */}
-        <div className="sticky top-[60px] z-40 bg-white border-b border-ink-200/70">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-            <div className="flex items-center gap-2 h-[52px] overflow-x-auto scrollbar-hide">
+        <div className="sticky top-15 z-40 bg-white border-b border-ink-200/70">
+          <div className="max-w-350 mx-auto px-4 sm:px-6">
+            <div className="flex items-center gap-2 h-13 overflow-x-auto scrollbar-hide">
               {ROLE_FILTERS.map((f) => (
                 <FilterChip
                   key={f}
@@ -99,14 +98,14 @@ export default function Home() {
                   {f}
                 </FilterChip>
               ))}
-              <div className="w-px h-5 bg-ink-200 flex-shrink-0 mx-1" />
-              <div className="flex items-center gap-1 ml-auto flex-shrink-0">
+              <div className="w-px h-5 bg-ink-200 shrink-0 mx-1" />
+              <div className="flex items-center gap-1 ml-auto shrink-0">
                 {SORT_OPTIONS.map((s) => (
                   <button
                     key={s}
                     onClick={() => setActiveSort(s)}
                     className={[
-                      "text-[13px] font-semibold px-2.5 py-1.5 rounded-[8px] transition-colors duration-150",
+                      "text-[13px] font-semibold px-2.5 py-1.5 rounded-sm transition-colors duration-150",
                       activeSort === s
                         ? "text-teamo bg-teamo-soft"
                         : "text-ink-400 hover:text-ink-700",
@@ -119,12 +118,18 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="max-w-[1500px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-7">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-7">
           <div className="mb-5">
             <Input
               placeholder="스터디, 기술스택, 역할로 검색해보세요"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={req.keyword}
+              onChange={(e) => {
+                setReq((prev) => ({
+                  ...prev,
+                  keyword: e.target.value,
+                  pageNum: 1,
+                }));
+              }}
               leftIcon={<SearchIcon size={18} />}
             />
             {post && <PostList data={post?.data} />}
@@ -167,7 +172,7 @@ export default function Home() {
                 ].map(([num, label]) => (
                   <div
                     key={label}
-                    className="bg-ink-50 rounded-[8px] p-3 text-center"
+                    className="bg-ink-50 rounded-sm p-3 text-center"
                   >
                     <div className="text-[22px] font-extrabold text-teamo tracking-[-0.02em]">
                       {num}
