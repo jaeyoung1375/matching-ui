@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { BookmarkIcon } from "lucide-react";
+import { BookmarkIcon, LockIcon } from "lucide-react";
 import clsx from "clsx";
 import { Badge } from "@/components/ui/Badge";
 import { TechTag, RoleTag } from "@/components/ui/FilterChip";
@@ -68,15 +68,38 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
       {memoData && (
         <Link
           href={`/post/${postId}`}
+          aria-disabled={memoData.isDeadlineOver}
+          onClick={(e) => {
+            if (memoData.isDeadlineOver) e.preventDefault();
+          }}
           className={clsx(
-            "group flex flex-col bg-white rounded-[16px]",
+            "group relative flex flex-col bg-white rounded-[16px]",
             "border border-ink-200/70 overflow-hidden",
-            "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-card-hover",
+            "transition-all duration-150",
+            memoData.isDeadlineOver
+              ? "cursor-not-allowed"
+              : "hover:-translate-y-0.5 hover:shadow-card-hover",
             className,
           )}
         >
+          {memoData.isDeadlineOver && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/55 backdrop-blur-[1.5px]">
+              <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-ink-900/90 shadow-lg">
+                <LockIcon size={13} className="text-white" strokeWidth={2.5} />
+                <span className="text-[13px] font-bold text-white tracking-[-0.01em]">
+                  마감되었습니다
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* 상단: 배지 + 북마크 */}
-          <div className="flex items-center justify-between px-4 pt-3.5">
+          <div
+            className={clsx(
+              "flex items-center justify-between px-4 pt-3.5",
+              memoData.isDeadlineOver && "grayscale opacity-70",
+            )}
+          >
             <div className="flex items-center gap-1.5 flex-wrap">
               {memoData.isDeadlineOver ? (
                 <Badge variant="closed">마감</Badge>
@@ -118,7 +141,12 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
           </div>
 
           {/* 본문 */}
-          <div className="flex flex-col gap-2 px-4 py-2.5 flex-1">
+          <div
+            className={clsx(
+              "flex flex-col gap-2 px-4 py-2.5 flex-1",
+              memoData.isDeadlineOver && "grayscale opacity-70",
+            )}
+          >
             <h3 className="text-[15px] font-bold text-ink-900 leading-[1.45] tracking-[-0.01em] line-clamp-2">
               {memoData.title}
             </h3>
@@ -154,7 +182,12 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
           </div>
 
           {/* 하단: 조회수·댓글·인원 + 마감일 */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-t border-ink-100">
+          <div
+            className={clsx(
+              "flex items-center justify-between px-4 py-2.5 border-t border-ink-100",
+              memoData.isDeadlineOver && "grayscale opacity-70",
+            )}
+          >
             <div className="flex items-center gap-2.5">
               {/* 조회수 */}
               <span className="flex items-center gap-1 text-[12px] text-ink-400 font-medium">

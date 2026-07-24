@@ -123,11 +123,13 @@ export type PostApplyUser = {
 };
 
 export type PostRequest = {
-  keyword?: string; // 검색어
+  keyword?: string; // 검색어,
+  positCd?: string; // 포지션 검색어
   techStackTypeCd?: string[]; // 기술스택구분코드
   progressTypeCd?: string; // 진행방식구분코드
   recruitPositTypeCd?: string; // 포지션구분코드
   pageNum?: number;
+  sortType?: "new" | "popular" | "deadline";
 };
 
 // 조회용 (상세 페이지)
@@ -150,7 +152,24 @@ export type PostRegisterRequest = {
   progressPeriod: string; // 진행기간
   recruitEndDate: string; // 모집마감일
   techStackTypeCd: string[]; // 기술스택
-  recruitPositions: RecruitPositionInput[]; // 포지션별 모집인원
+  recruitPositions?: RecruitPositionInput[]; // 포지션별 모집인원
   content: string; // 스터디소개
   recruitTarget: string; // 모집대상
+};
+
+// 수정용(게시물 수정)
+export type PostModifyRequest = {
+  title: string; // 제목
+  progressTypeCd: string; // 진행방식
+  progressPeriod: string; // 진행기간
+  recruitEndDate: string; // 모집마감일
+  techStackTypeCd: string[]; // 기술스택
+  recruitPositions?: RecruitPositionInput[]; // 포지션별 모집인원
+  content: string; // 스터디소개
+  recruitTarget: string; // 모집대상
+};
+
+export type PostModifyParam = {
+  postId: number;
+  body: PostModifyRequest;
 };

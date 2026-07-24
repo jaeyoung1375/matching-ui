@@ -2,7 +2,7 @@
 import PostList from "./post/PostList";
 import { Button } from "@/components/ui/Button";
 import { FilterChip } from "@/components/ui/FilterChip";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -10,34 +10,42 @@ import { Pagination } from "@/components/ui/Pagination";
 import { PostRequest } from "@/features/post/post.type";
 import { usePostListQuery } from "@/features/post/post.query";
 import MainSkeleton from "@/components/ui/MainSkeleton";
+import { useCodeQuery } from "@/features/code/code.query";
+import { calcDday } from "@/util/DateUtil";
+
+type StatusFilter = "open" | "all";
 
 export default function Home() {
   const router = useRouter();
 
   // ── 필터 옵션 ─────────────────────────────────────────────────────
-  const ROLE_FILTERS = [
-    "전체",
-    "프론트엔드",
-    "백엔드",
-    "iOS",
-    "Android",
-    "기획자",
-    "디자이너",
-    "PM",
-    "AI/ML",
-    "DevOps",
-  ];
+
   const SORT_OPTIONS = ["최신순", "인기순", "마감임박"];
 
-  const [activeFilter, setActiveFilter] = useState<string>("전체");
   const [activeSort, setActiveSort] = useState<string>("최신순");
 
   const [req, setReq] = useState<PostRequest>({
     pageNum: 1,
     keyword: "",
+    recruitPositTypeCd: "",
   });
 
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("open");
+
   const { data: post, isLoading } = usePostListQuery(req);
+
+  const filteredPostData = useMemo(() => {
+    if (!post) return undefined;
+    if (statusFilter === "all") return post.data;
+    return post.data.filter(
+      (item) => calcDday(item.recruitEndDate) !== "expired",
+    );
+  }, [post, statusFilter]);
+
+  const { data: RECRUIT_POSIT_LIST } = useCodeQuery({
+    comCdId: "RECRUIT_POSIT_TYPE_CD",
+    includeAll: true,
+  });
 
   if (isLoading) return <MainSkeleton />;
 
@@ -89,15 +97,33 @@ export default function Home() {
         <div className="sticky top-15 z-40 bg-white border-b border-ink-200/70">
           <div className="max-w-350 mx-auto px-4 sm:px-6">
             <div className="flex items-center gap-2 h-13 overflow-x-auto scrollbar-hide">
-              {ROLE_FILTERS.map((f) => (
+              {RECRUIT_POSIT_LIST?.map((f) => (
                 <FilterChip
-                  key={f}
-                  active={activeFilter === f}
-                  onClick={() => setActiveFilter(f)}
+                  key={f.dtlCdId}
+                  active={req.recruitPositTypeCd === f.dtlCdId}
+                  onClick={() => {
+                    setReq((prev) => ({
+                      ...prev,
+                      recruitPositTypeCd: f.dtlCdId,
+                    }));
+                  }}
                 >
-                  {f}
+                  {f.dtlCdNm}
                 </FilterChip>
               ))}
+              <div className="w-px h-5 bg-ink-200 shrink-0 mx-1" />
+              <FilterChip
+                active={statusFilter === "open"}
+                onClick={() => setStatusFilter("open")}
+              >
+                모집중
+              </FilterChip>
+              <FilterChip
+                active={statusFilter === "all"}
+                onClick={() => setStatusFilter("all")}
+              >
+                전체
+              </FilterChip>
               <div className="w-px h-5 bg-ink-200 shrink-0 mx-1" />
               <div className="flex items-center gap-1 ml-auto shrink-0">
                 {SORT_OPTIONS.map((s) => (
@@ -132,7 +158,20 @@ export default function Home() {
               }}
               leftIcon={<SearchIcon size={18} />}
             />
-            {post && <PostList data={post?.data} />}
+            {filteredPostData && (
+              <PostList
+                data={filteredPostData}
+                onResetFilter={() => {
+                  setActiveSort("최신순");
+                  setStatusFilter("open");
+                  setReq({
+                    pageNum: 1,
+                    keyword: "",
+                    recruitPositTypeCd: "",
+                  });
+                }}
+              />
+            )}
           </div>
 
           <aside className="flex flex-col gap-4">

@@ -24,13 +24,30 @@ import type {
 
 // ── Public 쿼리 ──────────────────────────────────────────
 
-export const useCodeQuery = (params: CodeRequest) =>
-  useQuery<codeResponse[], ApiError>({
-    queryKey: ["codes", params],
-    queryFn: () => fetchCode(params),
-    enabled: !!params.comCdId,
+export const useCodeQuery = (
+  params: CodeRequest & { includeAll?: boolean },
+) => {
+  const { includeAll, ...codeParams } = params;
+
+  return useQuery<codeResponse[], ApiError, codeResponse[]>({
+    queryKey: ["codes", codeParams],
+    queryFn: () => fetchCode(codeParams),
+    enabled: !!codeParams.comCdId,
     staleTime: Infinity,
+    select: (data) =>
+      includeAll
+        ? [
+            {
+              comCdId: codeParams.comCdId ?? "",
+              comCdNm: "전체",
+              dtlCdId: "",
+              dtlCdNm: "전체",
+            },
+            ...data,
+          ]
+        : data,
   });
+};
 
 // ── Admin - 공통코드 쿼리 & 뮤테이션 ──────────────────────
 

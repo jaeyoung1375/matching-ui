@@ -4,7 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { TechTag } from "@/components/ui/FilterChip";
-import { ChevronLeft, Clock, Users, Calendar } from "lucide-react";
+import { ChevronLeft, Clock, Users, Calendar, Pencil } from "lucide-react";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import CommentSection from "./components/CommentSection";
@@ -267,14 +267,25 @@ export default function StudyDetailPage() {
 
                 {/* 버튼 */}
                 {isOwner ? (
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="w-full mb-2"
-                    onClick={() => setApplicantModalOpen(true)}
-                  >
-                    지원자 관리
-                  </Button>
+                  <>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="w-full mb-2"
+                      onClick={() => setApplicantModalOpen(true)}
+                    >
+                      지원자 관리
+                    </Button>
+                    <Button
+                      variant="neutral"
+                      size="lg"
+                      className="w-full mb-2"
+                      leftIcon={<Pencil size={15} />}
+                      onClick={() => router.push(`/post/${postId}/edit`)}
+                    >
+                      수정하기
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Button
