@@ -4,7 +4,14 @@ import { useRouter, useParams } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { TechTag } from "@/components/ui/FilterChip";
-import { ChevronLeft, Clock, Users, Calendar, Pencil } from "lucide-react";
+import {
+  ChevronLeft,
+  Clock,
+  Users,
+  Calendar,
+  Pencil,
+  Lock,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import CommentSection from "./components/CommentSection";
@@ -13,6 +20,8 @@ import ApplyManageModal from "./components/ApplyManageModal";
 import { usePostQuery } from "@/features/post/post.query";
 import { calcDday, formatDateToKorean } from "@/util/DateUtil";
 import { useAuth } from "@/app/context/AuthContext";
+import LoginModal from "@/app/login/LoginModal";
+import Router from "@/util/router";
 
 const MOCK = {
   title: "React + TypeScript 실전 프로젝트 스터디",
@@ -64,13 +73,14 @@ const MOCK = {
 };
 
 export default function StudyDetailPage() {
-  const router = useRouter();
+  const router = new Router(useRouter());
   const params = useParams();
   const postId = Number(params.postId);
   const { user } = useAuth();
   const [bookmarked, setBookmarked] = useState(false);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [applicantModalOpen, setApplicantModalOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const { data: post } = usePostQuery(postId);
   const isOwner = !!user && !!post && user.id === post.userId;
@@ -155,7 +165,7 @@ export default function StudyDetailPage() {
                   기술 스택
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {memoData.techStackCd.map((t) => (
+                  {memoData.techStackCd.map((t: string) => (
                     <TechTag key={t} className="text-[13px] px-3 py-1">
                       {t}
                     </TechTag>
@@ -232,82 +242,120 @@ export default function StudyDetailPage() {
             {/* ── 우측 지원 카드 ── */}
             <div className="lg:sticky lg:top-[76px]">
               <div className="bg-white rounded-[16px] border border-ink-200/70 p-5">
-                <h3 className="text-[16px] font-bold text-ink-900">지원하기</h3>
-                <p className="text-[13px] text-teamo mt-0.5 mb-4">
-                  {memoData.isDeadlineOver ? (
-                    "마감되었습니다"
-                  ) : (
-                    <>마감까지 {memoData.deadLine} 남았습니다</>
-                  )}
-                </p>
-
-                {/* 포지션별 모집 현황 */}
-                <div className="flex flex-col gap-3 mb-4">
-                  {memoData.positions.map((pos) => (
-                    <div key={pos.recruitPositTypeCd}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[13px] font-semibold text-ink-700">
-                          {pos.recruitPositTypeNm}
-                        </span>
-                      </div>
-                      <div className="flex gap-1.5">
-                        {Array.from({ length: pos.recruitCnt }).map((_, i) => (
-                          <div
-                            key={i}
-                            className={clsx(
-                              "w-2.5 h-2.5 rounded-full",
-                              i < pos.currentCnt! ? "bg-teamo" : "bg-ink-200",
-                            )}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* 버튼 */}
-                {isOwner ? (
+                {!user ? (
                   <>
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      className="w-full mb-2"
-                      onClick={() => setApplicantModalOpen(true)}
-                    >
-                      지원자 관리
-                    </Button>
-                    <Button
-                      variant="neutral"
-                      size="lg"
-                      className="w-full mb-2"
-                      leftIcon={<Pencil size={15} />}
-                      onClick={() => router.push(`/post/${postId}/edit`)}
-                    >
-                      수정하기
-                    </Button>
+                    {/* 비로그인 상태 */}
+                    <h3 className="text-[16px] font-bold text-ink-900 mb-1">
+                      지원하기
+                    </h3>
+                    <div className="flex flex-col items-center justify-center gap-3 py-8">
+                      <div className="w-12 h-12 rounded-full bg-ink-50 flex items-center justify-center">
+                        <Lock size={20} className="text-ink-400" />
+                      </div>
+                      <p className="text-[14px] font-bold text-ink-700">
+                        로그인 후 이용 가능합니다
+                      </p>
+                      <p className="text-[12px] text-ink-400 text-center leading-relaxed">
+                        로그인하면 지원 현황 확인과
+                        <br />
+                        스터디 지원이 가능해요
+                      </p>
+                      <Button
+                        variant="primary"
+                        size="md"
+                        className="mt-1 px-8"
+                        onClick={() => setLoginModalOpen(true)}
+                      >
+                        로그인 하러 가기
+                      </Button>
+                    </div>
                   </>
                 ) : (
                   <>
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      className="w-full mb-2"
-                      onClick={() => setApplyModalOpen(true)}
-                      disabled={memoData.isDeadlineOver}
-                    >
-                      {memoData.isDeadlineOver ? "마감" : "지원하기"}
-                    </Button>
-                    <button
-                      onClick={() => setBookmarked((v) => !v)}
-                      className={clsx(
-                        "w-full h-10.5 rounded-[10px] text-[15px] font-bold border transition-colors duration-150 flex items-center justify-center gap-2",
-                        bookmarked
-                          ? "bg-teamo-soft text-teamo border-teamo"
-                          : "bg-transparent text-ink-700 border-ink-200 hover:border-teamo hover:text-teamo hover:bg-teamo-soft",
+                    <h3 className="text-[16px] font-bold text-ink-900">
+                      지원하기
+                    </h3>
+                    <p className="text-[13px] text-teamo mt-0.5 mb-4">
+                      {memoData.isDeadlineOver ? (
+                        "마감되었습니다"
+                      ) : (
+                        <>마감까지 {memoData.deadLine} 남았습니다</>
                       )}
-                    >
-                      {bookmarked ? "관심 등록됨" : "관심 등록"}
-                    </button>
+                    </p>
+
+                    {/* 포지션별 모집 현황 */}
+                    <div className="flex flex-col gap-3 mb-4">
+                      {memoData.positions.map((pos) => (
+                        <div key={pos.recruitPositTypeCd}>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[13px] font-semibold text-ink-700">
+                              {pos.recruitPositTypeNm}
+                            </span>
+                          </div>
+                          <div className="flex gap-1.5">
+                            {Array.from({ length: pos.recruitCnt }).map(
+                              (_, i) => (
+                                <div
+                                  key={i}
+                                  className={clsx(
+                                    "w-2.5 h-2.5 rounded-full",
+                                    i < pos.currentCnt!
+                                      ? "bg-teamo"
+                                      : "bg-ink-200",
+                                  )}
+                                />
+                              ),
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* 버튼 */}
+                    {isOwner ? (
+                      <>
+                        <Button
+                          variant="primary"
+                          size="lg"
+                          className="w-full mb-2"
+                          onClick={() => setApplicantModalOpen(true)}
+                        >
+                          지원자 관리
+                        </Button>
+                        <Button
+                          variant="neutral"
+                          size="lg"
+                          className="w-full mb-2"
+                          leftIcon={<Pencil size={15} />}
+                          onClick={() => router.push(`/post/${postId}/edit`)}
+                        >
+                          수정하기
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant="primary"
+                          size="lg"
+                          className="w-full mb-2"
+                          onClick={() => setApplyModalOpen(true)}
+                          disabled={memoData.isDeadlineOver}
+                        >
+                          {memoData.isDeadlineOver ? "마감" : "지원하기"}
+                        </Button>
+                        <button
+                          onClick={() => setBookmarked((v) => !v)}
+                          className={clsx(
+                            "w-full h-10.5 rounded-[10px] text-[15px] font-bold border transition-colors duration-150 flex items-center justify-center gap-2",
+                            bookmarked
+                              ? "bg-teamo-soft text-teamo border-teamo"
+                              : "bg-transparent text-ink-700 border-ink-200 hover:border-teamo hover:text-teamo hover:bg-teamo-soft",
+                          )}
+                        >
+                          {bookmarked ? "관심 등록됨" : "관심 등록"}
+                        </button>
+                      </>
+                    )}
                   </>
                 )}
 
@@ -343,6 +391,12 @@ export default function StudyDetailPage() {
           onClose={() => setApplicantModalOpen(false)}
         />
       )}
+
+      {/* 로그인 모달 */}
+      <LoginModal
+        open={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
     </main>
   );
 }

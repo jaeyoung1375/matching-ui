@@ -9,7 +9,6 @@ import SelectBox from "@/components/SelectBox";
 import TeamoDatePicker from "@/components/TeamoDatePicker";
 import { Controller, useForm } from "react-hook-form";
 import {
-  PostModifyParam,
   PostModifyRequest,
   PostRegisterRequest,
   RecruitPosition,
@@ -18,6 +17,7 @@ import { formatDateToYYYYMMDD, parseYYYYMMDD } from "@/util/DateUtil";
 import MultiSelect from "@/components/MultiSelectBox";
 import { usePostQuery } from "@/features/post/post.query";
 import { useModifyPostMutation } from "@/features/post/post.mutation";
+import Router from "@/util/router";
 
 function FieldLabel({
   children,
@@ -89,29 +89,34 @@ export default function PostEdit() {
 
   const { mutate: modifyPost } = useModifyPostMutation();
 
-  const { control, register, handleSubmit } = useForm<PostRegisterRequest>({
-    defaultValues: {
-      title: "",
-      recruitEndDate: formatDateToYYYYMMDD(new Date()),
-      progressTypeCd: "10",
-      progressPeriod: "1",
-    },
-    values: post
-      ? {
-          title: post.title ?? "",
-          progressTypeCd: post.progressTypeCd ?? "10",
-          progressPeriod: post.progressPeriod ?? "1",
-          recruitEndDate: post.recruitEndDate,
-          techStackTypeCd: post.techStackCd ?? [],
-          content: post.content ?? "",
-          recruitTarget: post.recruitTarget ?? "",
-        }
-      : undefined,
-  });
+  const { control, register, handleSubmit, reset } =
+    useForm<PostRegisterRequest>({
+      defaultValues: {
+        title: "",
+        recruitEndDate: formatDateToYYYYMMDD(new Date()),
+        progressTypeCd: "10",
+        progressPeriod: "1",
+      },
+    });
+
+  /** 조회한 게시글 데이터로 폼 초기화 */
+  useEffect(() => {
+    if (!post) return;
+    reset({
+      title: post.title ?? "",
+      progressTypeCd: post.progressTypeCd ?? "10",
+      progressPeriod: post.progressPeriod ?? "1",
+      recruitEndDate: post.recruitEndDate,
+      techStackTypeCd: post.techStackCd ?? [],
+      content: post.content ?? "",
+      recruitTarget: post.recruitTarget ?? "",
+    });
+  }, [post, reset]);
 
   /** 조회한 게시글의 포지션 목록으로 초기화 */
   useEffect(() => {
     if (!post) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRecruitPositions(post.positions ?? []);
   }, [post]);
 

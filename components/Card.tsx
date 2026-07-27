@@ -6,49 +6,19 @@ import { Badge } from "@/components/ui/Badge";
 import { TechTag, RoleTag } from "@/components/ui/FilterChip";
 import { useMemo } from "react";
 import { calcDday } from "@/util/DateUtil";
+import { PostResponse } from "@/features/post/post.type";
 
 export type StudyMode = "online" | "offline" | "hybrid";
 export type StudyStatus = "open" | "closed" | "full";
 
-export interface StudyCardData {
-  postId: string;
-  title: string;
-  techStackCd: string[];
-  recruitPositTypeNm: string[];
-  name: string;
-  progressTypeCd: string;
-  status: StudyStatus;
-  deadline: string; // 'D-7' | 'D-3' | '마감'
-  deadlineUrgent?: boolean;
-  viewCnt: number;
-  comments: number;
-  recruitCnt: string; // '2/4명'
-  bookmarked?: boolean;
-  isDeadlineOver?: string; // 마감여부
-  recruitEndDate: string;
-}
-
 interface StudyCardProps {
-  data: StudyCardData;
-  onBookmark?: (id: string) => void;
+  data: PostResponse;
+  onBookmark?: (id: number) => void;
   className?: string;
 }
 
 export function Card({ data, onBookmark, className }: StudyCardProps) {
-  const {
-    postId,
-    title,
-    techStackCd,
-    recruitPositTypeNm,
-    name,
-    progressTypeCd,
-    deadlineUrgent,
-    isDeadlineOver,
-    viewCnt,
-    recruitCnt,
-    bookmarked,
-    recruitEndDate,
-  } = data;
+  const { postId } = data;
 
   const memoData = useMemo(() => {
     if (!data) return;
@@ -151,12 +121,12 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
               {memoData.title}
             </h3>
             <div className="flex flex-wrap gap-1.5">
-              {memoData.techStackCd.map((t) => (
+              {memoData.techStackCd.map((t: string) => (
                 <TechTag key={t}>{t}</TechTag>
               ))}
             </div>
             <div className="flex flex-wrap gap-1">
-              {memoData.recruitPositTypeNm.map((r) => (
+              {memoData?.recruitPositTypeNm?.map((r: string) => (
                 <RoleTag key={r} color={"blue"}>
                   {r}
                 </RoleTag>
@@ -171,7 +141,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
                   "from-teamo-400 to-teamo-300",
                 )}
               >
-                {memoData.name[0]}
+                {memoData.name?.[0]}
               </div>
               <span className="text-[12px] font-semibold text-ink-600">
                 {memoData.name}
@@ -220,7 +190,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
                 >
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
-                {"14"}
+                {memoData.commentCnt}
               </span>
               {/* 인원 */}
               <span className="flex items-center gap-1 text-[12px] text-ink-400 font-medium">
@@ -244,7 +214,7 @@ export function Card({ data, onBookmark, className }: StudyCardProps) {
             <span
               className={clsx(
                 "text-[12px] font-bold px-2 py-0.5 rounded-[5px]",
-                deadlineUrgent
+                memoData.isDeadlineOver
                   ? "text-danger bg-danger-soft"
                   : "text-teamo bg-teamo-soft",
               )}
